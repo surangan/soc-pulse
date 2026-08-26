@@ -9,7 +9,6 @@
 <style>
 :root{
   --blue:#003D7C;
-  --blue-deep:#022B57;
   --orange:#EF7C00;
   --paper:#F7F6F2;
   --card:#FFFFFF;
@@ -25,30 +24,29 @@
   --sans:'IBM Plex Sans',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}
 button{font-family:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 
-/* ---------- Header ---------- */
 header{background:var(--blue);color:#fff;padding:0 28px}
-.hd-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:18px;height:64px}
+.hd-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:14px;height:64px;flex-wrap:wrap}
 .hd-mark{display:flex;align-items:baseline;gap:10px}
 .hd-mark .pulse-dot{width:10px;height:10px;border-radius:50%;background:var(--orange);display:inline-block;animation:beat 2.4s ease-in-out infinite}
 @keyframes beat{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.7}}
 .hd-mark h1{font-size:17px;font-weight:700;letter-spacing:.01em}
 .hd-mark span.sub{font-size:12px;color:#B9CCE3;font-weight:500}
-.hd-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 .hd-date{font-family:var(--mono);font-size:12px;color:#B9CCE3}
-.btn-report{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:9px 16px;font-weight:600;font-size:13px;transition:background .15s}
+.btn-report{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:9px 16px;font-weight:600;font-size:13px}
 .btn-report:hover{background:#D66F00}
 .btn-report[disabled]{opacity:.6;cursor:wait}
+.btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:6px;padding:8px 14px;font-weight:600;font-size:13px}
+.btn-ghost:hover{border-color:#fff}
+.btn-ghost[disabled]{opacity:.5;cursor:wait}
 
-/* ---------- Shell ---------- */
 .shell{max-width:1280px;margin:0 auto;padding:22px 28px 60px}
 
-/* ---------- KPI strip ---------- */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .kpi .lab{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
@@ -60,23 +58,8 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 .kpi.good .val{color:var(--good)}
 .up{color:var(--good)}.down{color:var(--alert)}.flat{color:var(--neutral)}
 
-/* ---------- Pulse strip (signature) ---------- */
-.pulse-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px 12px;margin-bottom:18px}
-.pulse-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
-.pulse-head h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue)}
-.pulse-head .legend{display:flex;gap:14px;font-size:11px;color:var(--ink-soft)}
-.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.pulse-track{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;align-items:end;height:64px}
-.pulse-track .hr{border-radius:3px 3px 0 0;min-height:4px;position:relative;transition:transform .12s}
-.pulse-track .hr:hover{transform:scaleY(1.06)}
-.pulse-track .hr::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-family:var(--mono);font-size:10px;padding:4px 7px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:5}
-.pulse-track .hr:hover::after{opacity:1}
-.pulse-hours{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--neutral);text-align:center}
-
-/* ---------- Main grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
 
-/* Feed */
 .feed-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .feed-head{display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .feed-head h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-right:auto}
@@ -94,8 +77,9 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 .chip.src{background:var(--blue);color:#fff}
 .chip.attn{background:var(--alert-bg);color:var(--alert)}
 .chip.good{background:var(--good-bg);color:var(--good)}
+.chip.auto{background:#FFF4E6;color:#B05B00}
 .m-time{font-family:var(--mono);font-size:11px;color:var(--neutral);margin-left:auto}
-.m-text{font-size:13.5px;line-height:1.55;margin:2px 0 8px}
+.m-text{font-size:13.5px;line-height:1.55;margin:2px 0 8px;overflow-wrap:anywhere}
 .m-text b{background:#FFF0DE;font-weight:600;padding:0 2px;border-radius:2px}
 .m-meta{display:flex;gap:14px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);align-items:center;flex-wrap:wrap}
 .m-actions{margin-left:auto;display:flex;gap:8px}
@@ -103,8 +87,8 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 .m-actions button:hover{border-color:var(--blue);color:var(--blue)}
 .mention.handled{opacity:.45}
 .mention.handled .m-actions .b-handle{border-color:var(--good);color:var(--good)}
+.feed-empty{padding:26px 16px;color:var(--neutral);font-size:13px}
 
-/* Right rail */
 .rail-col{display:flex;flex-direction:column;gap:18px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
 .panel h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:12px}
@@ -115,12 +99,13 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 .ch-count{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);text-align:right}
 .kw{display:flex;flex-wrap:wrap;gap:7px}
 .kw span{font-family:var(--mono);font-size:11.5px;padding:4px 10px;border-radius:14px;border:1px solid var(--line);background:#fff}
-.kw span.hot{border-color:var(--alert);color:var(--alert);background:var(--alert-bg)}
-.kw span.warm{border-color:var(--orange);color:#B05B00;background:#FFF4E6}
-.watch li{font-size:12.5px;color:var(--ink-soft);margin:0 0 8px 16px}
-.watch li::marker{color:var(--orange)}
+.scan-line{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-bottom:6px;line-height:1.5}
+.scan-line.ok::before{content:'\2713 ';color:var(--good)}
+.scan-line.err::before{content:'\2715 ';color:var(--alert)}
+.scan-line.skip::before{content:'\2013 ';color:var(--neutral)}
+.scan-status{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;line-height:1.6}
+.scan-status b{color:var(--ink)}
 
-/* Report modal */
 .overlay{position:fixed;inset:0;background:rgba(15,20,30,.55);display:none;align-items:flex-start;justify-content:center;padding:40px 20px;z-index:50;overflow:auto}
 .overlay.open{display:flex}
 .report{background:#fff;border-radius:12px;max-width:720px;width:100%;padding:28px 32px;position:relative}
@@ -129,14 +114,19 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 .report .r-date{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
 .report .r-close{margin-left:auto;border:none;background:#EEF1F6;border-radius:6px;width:30px;height:30px;font-size:15px}
 .report-body{font-size:13.5px;line-height:1.65;white-space:pre-wrap}
-.report-body h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin:16px 0 6px}
 .r-foot{margin-top:18px;display:flex;gap:10px}
 .r-foot button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:8px 14px;font-size:12.5px;font-weight:600}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
 @keyframes sp{to{transform:rotate(360deg)}}
 
+.set-row{margin-bottom:14px}
+.set-row label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:5px}
+.set-row select,.set-row input{width:100%;font-family:var(--mono);font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.set-note{font-size:12px;color:var(--neutral);margin-top:4px;line-height:1.5}
+.btn-primary{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:9px 16px;font-weight:600;font-size:13px}
+
 .proto-note{margin-top:22px;font-size:11.5px;color:var(--neutral);font-family:var(--mono)}
-@media(max-width:960px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.pulse-hours span:nth-child(odd){visibility:hidden}}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -150,6 +140,8 @@ header{background:var(--blue);color:#fff;padding:0 28px}
     </div>
     <div class="hd-right">
       <span class="hd-date" id="todayLabel"></span>
+      <button class="btn-ghost" id="btnScan">Scan now</button>
+      <button class="btn-ghost" id="btnSettings">Settings</button>
       <button class="btn-report" id="btnReport">Generate daily report</button>
     </div>
   </div>
@@ -182,33 +174,22 @@ header{background:var(--blue);color:#fff;padding:0 28px}
     <!-- Right rail -->
     <div class="rail-col">
       <div class="panel">
-        <h2>Channels · today</h2>
+        <h2>Scanner</h2>
+        <div class="scan-status" id="scanStatus">Loading…</div>
+        <div id="scanLog"></div>
+      </div>
+      <div class="panel">
+        <h2>Channels</h2>
         <div id="channels"></div>
       </div>
       <div class="panel">
-        <h2>Trending keywords</h2>
-        <div class="kw">
-          <span class="hot">coursereg</span>
-          <span class="warm">job market</span>
-          <span>National Awards</span>
-          <span>Razer AI lab</span>
-          <span>FYP</span>
-          <span>NUSWhispers</span>
-          <span>new faculty</span>
-        </div>
-      </div>
-      <div class="panel">
-        <h2>Watchlist</h2>
-        <ul class="watch">
-          <li>CourseReg appeal window ongoing — expect elevated Reddit + Telegram volume</li>
-          <li>Razer–NUS AI lab in national press — window to pitch researcher features</li>
-          <li>HardwareZone thread on degree value (monitoring, stable)</li>
-        </ul>
+        <h2>Tracked keywords</h2>
+        <div class="kw" id="kwList"></div>
       </div>
     </div>
   </div>
 
-  <p class="proto-note">Prototype · all mentions are real public posts · metrics computed from tracked mentions · alerts routed to #soc-comms on Slack &amp; Telegram in production</p>
+  <p class="proto-note">All mentions are real public posts · metrics computed from tracked mentions · NUSWhispers &amp; Hacker News scanned live in this browser · Reddit / X / LinkedIn / TikTok / press require the server-side pipeline · history is stored in this browser only</p>
 </div>
 
 <!-- Report modal -->
@@ -227,150 +208,385 @@ header{background:var(--blue);color:#fff;padding:0 28px}
   </div>
 </div>
 
+<!-- Settings modal -->
+<div class="overlay" id="setOverlay" role="dialog" aria-modal="true" aria-labelledby="sTitle">
+  <div class="report" style="max-width:480px">
+    <div class="r-head">
+      <h2 id="sTitle">Scanner settings</h2>
+      <button class="r-close" id="sClose" aria-label="Close settings">✕</button>
+    </div>
+    <div class="set-row">
+      <label for="setInterval">Automatic scan interval</label>
+      <select id="setInterval">
+        <option value="15">Every 15 minutes</option>
+        <option value="30">Every 30 minutes</option>
+        <option value="60">Every hour</option>
+        <option value="180">Every 3 hours</option>
+        <option value="360">Every 6 hours</option>
+        <option value="0">Off (manual only)</option>
+      </select>
+      <div class="set-note">Scans run while this dashboard is open in a browser tab. If the tab was closed, a scan runs on reopening when one is due.</div>
+    </div>
+    <div class="set-row">
+      <label for="setRetention">Keep scanned records for</label>
+      <select id="setRetention">
+        <option value="1">1 day</option>
+        <option value="3">3 days</option>
+        <option value="7">1 week</option>
+        <option value="14">2 weeks</option>
+        <option value="30">30 days</option>
+      </select>
+      <div class="set-note">Older scanned mentions are pruned automatically. Curated seed items are kept.</div>
+    </div>
+    <div class="set-row">
+      <label for="setKeywords">Tracked keywords (comma-separated)</label>
+      <input id="setKeywords" type="text" spellcheck="false">
+      <div class="set-note">Used to query NUSWhispers and Hacker News, and to match relevance.</div>
+    </div>
+    <div class="r-foot">
+      <button class="btn-primary" id="sSave">Save settings</button>
+      <button id="sClear">Clear scanned history</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ---------------- Sample data ---------------- */
-const MENTIONS = [
- {sev:'attn', src:'Reddit · r/nus', time:'4 Aug', reach:'70 upvotes · 4 comments',
+/* ================= Storage & settings ================= */
+const LS_KEY = 'socpulse.v1';
+const DEFAULTS = { intervalMin: 60, retentionDays: 7,
+  keywords: 'computing, computer science, coursereg, CS1101S, CS2030S, FYP, SoC' };
+
+function loadStore(){
+  try{ const s = JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.settings) return s; }catch(e){}
+  return { settings: {...DEFAULTS}, mentions: [], handled: [], lastScan: 0, lastLog: [] };
+}
+let store = loadStore();
+function saveStore(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(store)); }catch(e){} }
+function kwArr(){ return store.settings.keywords.split(',').map(k=>k.trim()).filter(Boolean); }
+
+/* ================= Curated seed mentions (real public posts) ================= */
+const CURATED = [
+ {id:'c1', sev:'attn', src:'Reddit · r/nus', time:'2026-08-04T09:00:00+08:00', reach:'70 upvotes · 4 comments',
   text:'Student reports <b>missing all three rounds</b> of CourseReg bidding and still being without needed classes — thread drawing sympathy and similar stories.',
   tag:'CourseReg complaint · monitor + FAQ reply', url:'https://www.reddit.com/r/nus/comments/1vf4r6z/missed_all_three_rounds_of_bidding/'},
- {sev:'attn', src:'Reddit · r/nus', time:'1 Aug', reach:'100 upvotes · 28 comments',
+ {id:'c2', sev:'attn', src:'Reddit · r/nus', time:'2026-08-01T09:00:00+08:00', reach:'100 upvotes · 28 comments',
   text:'A fresh grad shares a detailed <b>job hunting report</b> — applications sent, response rates and outcomes — fuelling discussion on the tech job market for computing grads.',
   tag:'Employment sentiment · monitor', url:'https://www.reddit.com/r/nus/comments/1vcqqch/graduate_job_hunting_report/'},
- {sev:'attn', src:'NUSWhispers', time:'#99161', reach:'Public confession',
+ {id:'c3', sev:'attn', src:'NUSWhispers', time:'2026-08-18T20:00:00+08:00', reach:'Confession #99161',
   text:'A Year 4 <b>computer science</b> student asks Prof Ben and computing seniors for advice as friends begin their FYP — worried about falling behind.',
   tag:'Student concern · supportive reply / route to advisors', url:'https://www.nuswhispers.com/confession/99161'},
- {sev:'good', src:'LinkedIn', time:'2w ago', reach:'70+ reactions',
+ {id:'c4', sev:'good', src:'LinkedIn', time:'2026-08-13T10:00:00+08:00', reach:'70+ reactions',
   text:'NUS Computing congratulates the 12 staff and faculty members who received the <b>2026 National Awards</b>.',
   tag:'Achievement · showcase candidate', url:'https://www.linkedin.com/posts/nuscomputing_singapore-nus-nuscomputing-activity-7493496903205220352-LGx4'},
- {sev:'good', src:'The Straits Times', time:'5 Aug', reach:'National press',
+ {id:'c5', sev:'good', src:'The Straits Times', time:'2026-08-05T08:00:00+08:00', reach:'National press',
   text:'Coverage of the new <b>Razer–NUS AI lab</b>, which will build game companions "beyond Tamagotchi" levels of intelligence.',
   tag:'Research coverage · amplify', url:'https://www.straitstimes.com/tech/new-razer-nus-ai-lab-to-build-companions-beyond-tamagotchi-gaming-intelligence'},
- {sev:'good', src:'TikTok', time:'Sep 2025', reach:'Public video',
+ {id:'c6', sev:'good', src:'TikTok', time:'2025-09-15T12:00:00+08:00', reach:'Public video',
   text:'"<b>Life as a Computer Science student at NUS</b>" — a day-in-the-life video showing campus, classes and study routine.',
   tag:'Organic advocacy · engage creator', url:'https://www.tiktok.com/@user3869533654120/video/7545866925272763656'},
- {sev:'good', src:'X (Twitter)', time:'1w ago', reach:'@NUSComputing official',
+ {id:'c7', sev:'good', src:'X (Twitter)', time:'2026-08-19T11:00:00+08:00', reach:'@NUSComputing official',
   text:'The school welcomes <b>17 new faculty members</b>, with expertise spanning trustworthy AI to platform economics.',
   tag:'Community news · engage', url:'https://x.com/NUSComputing/status/2088180427043586066'},
- {sev:'neutral', src:'HardwareZone', time:'Jun 2025', reach:'Active forum thread',
+ {id:'c8', sev:'neutral', src:'HardwareZone', time:'2025-06-11T12:00:00+08:00', reach:'Active forum thread',
   text:'Forum thread debates whether it is <b>still a good time</b> to get an NUS Computing degree, given growing competition in the CS field.',
   tag:'Prospective-student query · FAQ opportunity', url:'https://forums.hardwarezone.com.sg/threads/is-it-still-a-good-time-to-get-nus-computing-degree.7135350/'},
- {sev:'neutral', src:'Telegram · SoC channels', time:'Ongoing', reach:'Official club channel',
+ {id:'c9', sev:'neutral', src:'Telegram · SoC channels', time:'2026-08-20T09:00:00+08:00', reach:'Official club channel',
   text:'NUS Students\' Computing Club announcement channel — <b>events and updates</b> for the SoC community.',
   tag:'Community chatter', url:'https://t.me/s/nuscomputingclub'},
 ];
 
-/* ---------------- Render ---------------- */
-const todayLabel = new Date().toLocaleDateString('en-SG',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-document.getElementById('todayLabel').textContent = todayLabel;
-document.getElementById('rDate').textContent = todayLabel;
+/* ================= Helpers ================= */
+const $ = id => document.getElementById(id);
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function fmtRel(iso){
+  const t = new Date(iso).getTime(); if(!t) return '';
+  const d = Date.now()-t;
+  if(d < 3600000) return Math.max(1,Math.round(d/60000))+'m ago';
+  if(d < 86400000) return Math.round(d/3600000)+'h ago';
+  if(d < 7*86400000) return Math.round(d/86400000)+'d ago';
+  return new Date(t).toLocaleDateString('en-SG',{day:'numeric',month:'short'});
+}
+function cutoff(){ return Date.now() - store.settings.retentionDays*86400000; }
+function allMentions(){
+  const auto = store.mentions.filter(m => new Date(m.time).getTime() >= cutoff());
+  return [...CURATED, ...auto].sort((a,b)=> new Date(b.time)-new Date(a.time));
+}
 
-const feed = document.getElementById('feed');
-MENTIONS.forEach((m,i)=>{
-  const d = document.createElement('div');
-  d.className = 'mention sev-'+m.sev; d.dataset.sev = m.sev;
-  const chip = m.sev==='attn' ? '<span class="chip attn">NEEDS ATTENTION</span>'
+/* ================= Classification (heuristic; humans stay in the loop) ================= */
+function classify(text){
+  const t = text.toLowerCase();
+  if(/(depress|anxi|suicid|self[- ]?harm|burn[t ]?out|burnout|overwhelm|mental health|hopeless|lonely|breaking down)/.test(t))
+    return {sev:'attn', tag:'Possible wellbeing signal · route to wellbeing team — no automated reply'};
+  if(/(complain|fail|worst|angry|disappoint|frustrat|scam|broken|can'?t get|cannot get|no job|jobless|reject|retrench|unfair|rant|struggl|regret|stress|toxic|waste)/.test(t))
+    return {sev:'attn', tag:'Negative sentiment · review &amp; monitor'};
+  if(/(congrat|award|win\b|won\b|proud|launch|welcome|love|amazing|best|excit|achiev|grateful|thank|top \d|breakthrough|scholarship)/.test(t))
+    return {sev:'good', tag:'Positive mention · consider amplifying'};
+  return {sev:'neutral', tag:'Community chatter · monitor'};
+}
+
+/* ================= Scan sources ================= */
+async function fetchJSON(url, ms){
+  const c = new AbortController(); const to = setTimeout(()=>c.abort(), ms||10000);
+  try{ const r = await fetch(url,{signal:c.signal}); clearTimeout(to);
+    if(!r.ok) throw new Error('HTTP '+r.status); return await r.json();
+  }catch(e){ clearTimeout(to); throw e; }
+}
+
+async function scanNUSWhispers(){
+  const seen = new Set(store.mentions.map(m=>m.id));
+  const out = [];
+  let reached = false;
+  for(const kw of kwArr().slice(0,4)){
+    let j;
+    try{ j = await fetchJSON('https://www.nuswhispers.com/api/confessions/search/'+encodeURIComponent(kw)+'?count=10'); reached = true; }
+    catch(e){ continue; }
+    const list = (j.data && j.data.confessions) || [];
+    for(const c of list){
+      const id = 'w'+c.confession_id;
+      if(seen.has(id)) continue;
+      let when = new Date();
+      if(c.created_on){ when = (/^\d+$/.test(''+c.created_on)) ? new Date(c.created_on*1000) : new Date(c.created_on); }
+      if(isNaN(when.getTime()) || when.getTime() < cutoff()) continue;
+      const body = (c.content||'').replace(/\s+/g,' ').trim();
+      if(!body) continue;
+      const cls = classify(body);
+      seen.add(id);
+      out.push({ id, sev:cls.sev, src:'NUSWhispers', time:when.toISOString(),
+        reach:'Confession #'+c.confession_id + (c.views ? ' · '+c.views+' views' : ''),
+        text: esc(body.length>240 ? body.slice(0,240)+'…' : body),
+        tag: cls.tag, url:'https://www.nuswhispers.com/confession/'+c.confession_id, auto:true });
+    }
+  }
+  if(!reached) throw new Error('unreachable');
+  return out;
+}
+
+async function scanHackerNews(){
+  const seen = new Set(store.mentions.map(m=>m.id));
+  const out = [];
+  const j = await fetchJSON('https://hn.algolia.com/api/v1/search_by_date?query='+encodeURIComponent('"NUS" computing')+'&tags=story&hitsPerPage=15');
+  for(const h of (j.hits||[])){
+    const id = 'hn'+h.objectID;
+    if(seen.has(id)) continue;
+    const when = new Date(h.created_at);
+    if(isNaN(when.getTime()) || when.getTime() < cutoff()) continue;
+    const title = (h.title||'').trim(); if(!title) continue;
+    const rel = /\bnus\b/i.test(title) || kwArr().some(k=>title.toLowerCase().includes(k.toLowerCase()));
+    if(!rel) continue;
+    const cls = classify(title);
+    seen.add(id);
+    out.push({ id, sev:cls.sev, src:'Hacker News', time:when.toISOString(),
+      reach:(h.points||0)+' points · '+(h.num_comments||0)+' comments',
+      text: esc(title), tag: cls.tag,
+      url: h.url || ('https://news.ycombinator.com/item?id='+h.objectID), auto:true });
+  }
+  return out;
+}
+
+/* ================= Scan orchestration ================= */
+let scanning = false;
+async function runScan(trigger){
+  if(scanning) return; scanning = true;
+  const btn = $('btnScan'); btn.disabled = true; btn.textContent = 'Scanning…';
+  $('scanStatus').innerHTML = '<b>Scanning…</b> ('+esc(trigger||'manual')+')';
+  const log = [];
+  const jobs = [ ['NUSWhispers', scanNUSWhispers], ['Hacker News', scanHackerNews] ];
+  for(const [name, fn] of jobs){
+    try{
+      const items = await fn();
+      store.mentions.push(...items);
+      log.push({cls:'ok', text:name+': '+items.length+' new'});
+    }catch(e){
+      log.push({cls:'err', text:name+': unreachable'});
+    }
+  }
+  log.push({cls:'skip', text:'Reddit, X, LinkedIn, TikTok, press: server-side pipeline required'});
+  store.mentions = store.mentions.filter(m => new Date(m.time).getTime() >= cutoff());
+  store.lastScan = Date.now();
+  store.lastLog = log;
+  saveStore();
+  scanning = false;
+  btn.disabled = false; btn.textContent = 'Scan now';
+  renderAll();
+}
+
+function renderScanner(){
+  const s = store.settings;
+  let status;
+  if(scanning){ status = '<b>Scanning…</b>'; }
+  else if(!store.lastScan){ status = 'No scan yet · press <b>Scan now</b>'; }
+  else{
+    let next = 'auto-scan off';
+    if(s.intervalMin > 0){
+      const in_ = store.lastScan + s.intervalMin*60000 - Date.now();
+      next = in_ <= 0 ? 'next scan due' : 'next in '+Math.max(1,Math.round(in_/60000))+'m';
+    }
+    status = 'Last scan <b>'+fmtRel(new Date(store.lastScan).toISOString())+'</b> · '+next;
+  }
+  $('scanStatus').innerHTML = status +
+    '<br>Interval: <b>'+(s.intervalMin>0 ? (s.intervalMin>=60 ? (s.intervalMin/60)+'h' : s.intervalMin+'m') : 'manual')+
+    '</b> · Retention: <b>'+s.retentionDays+'d</b>';
+  $('scanLog').innerHTML = (store.lastLog||[]).map(l=>'<div class="scan-line '+l.cls+'">'+esc(l.text)+'</div>').join('');
+}
+
+/* ================= Render ================= */
+const todayLabel = new Date().toLocaleDateString('en-SG',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+$('todayLabel').textContent = todayLabel;
+$('rDate').textContent = todayLabel;
+
+let activeFilter = 'all';
+function renderAll(){
+  const items = allMentions();
+  const feed = $('feed'); feed.innerHTML = '';
+  let shown = 0;
+  items.forEach(m=>{
+    if(activeFilter!=='all' && m.sev!==activeFilter) return;
+    shown++;
+    const d = document.createElement('div');
+    d.className = 'mention sev-'+m.sev + (store.handled.includes(m.id)?' handled':'');
+    d.dataset.sev = m.sev;
+    const chip = m.sev==='attn' ? '<span class="chip attn">NEEDS ATTENTION</span>'
              : m.sev==='good' ? '<span class="chip good">POSITIVE</span>'
              : '<span class="chip">NEUTRAL</span>';
-  d.innerHTML = `<div class="rail"></div><div>
-    <div class="m-top"><span class="chip src">${m.src}</span>${chip}<span class="m-time">${m.time}</span></div>
-    <div class="m-text">${m.text}</div>
-    <div class="m-meta"><span>${m.reach}</span><span>· ${m.tag}</span>
-      <span class="m-actions">
-        <button class="b-open">Open source</button>
-        <button class="b-handle">Mark handled</button>
-      </span></div></div>`;
-  d.querySelector('.b-handle').addEventListener('click',()=>{
-    d.classList.toggle('handled');
-    d.querySelector('.b-handle').textContent = d.classList.contains('handled') ? 'Handled ✓' : 'Mark handled';
+    const autoChip = m.auto ? '<span class="chip auto">AUTO-SCANNED</span>' : '';
+    const handled = store.handled.includes(m.id);
+    d.innerHTML = `<div class="rail"></div><div>
+      <div class="m-top"><span class="chip src">${esc(m.src)}</span>${chip}${autoChip}<span class="m-time">${fmtRel(m.time)}</span></div>
+      <div class="m-text">${m.text}</div>
+      <div class="m-meta"><span>${esc(m.reach)}</span><span>· ${m.tag}</span>
+        <span class="m-actions">
+          <button class="b-open">Open source</button>
+          <button class="b-handle">${handled?'Handled ✓':'Mark handled'}</button>
+        </span></div></div>`;
+    d.querySelector('.b-handle').addEventListener('click',()=>{
+      const i = store.handled.indexOf(m.id);
+      if(i>=0) store.handled.splice(i,1); else store.handled.push(m.id);
+      saveStore(); renderAll();
+    });
+    d.querySelector('.b-open').addEventListener('click',()=>{
+      window.open(m.url,'_blank','noopener');
+    });
+    feed.appendChild(d);
   });
-  d.querySelector('.b-open').addEventListener('click',()=>{
-    window.open(m.url,'_blank','noopener');
+  if(!shown) feed.innerHTML = '<div class="feed-empty">No mentions in this view yet — run a scan or adjust settings.</div>';
+
+  const chWrap = $('channels'); chWrap.innerHTML='';
+  const byCh = {};
+  items.forEach(m=>{ (byCh[m.src] = byCh[m.src]||[]).push(m.sev); });
+  Object.entries(byCh).forEach(([name,sevs])=>{
+    const c = sevs.length;
+    const p = Math.round(100*sevs.filter(s=>s==='good').length/c);
+    const x = Math.round(100*sevs.filter(s=>s==='attn').length/c);
+    const n = 100-p-x;
+    const r = document.createElement('div'); r.className='ch-row';
+    r.innerHTML = `<span>${esc(name)}</span>
+      <div class="ch-bar" role="img" aria-label="${esc(name)}: ${p}% positive, ${n}% neutral, ${x}% negative">
+        <i class="p" style="width:${p}%"></i><i class="n" style="width:${n}%"></i><i class="x" style="width:${x}%"></i>
+      </div><span class="ch-count">${c}</span>`;
+    chWrap.appendChild(r);
   });
-  feed.appendChild(d);
-});
+
+  const nAttn = items.filter(m=>m.sev==='attn').length;
+  const nGood = items.filter(m=>m.sev==='good').length;
+  $('kMent').textContent = items.length;
+  $('kChan').textContent = 'across '+Object.keys(byCh).length+' channels';
+  $('kAttn').textContent = nAttn;
+  $('kGood').textContent = nGood;
+  const net = items.length ? (nGood-nAttn)/items.length : 0;
+  $('kSent').textContent = (net>=0?'+':'')+net.toFixed(2);
+
+  $('kwList').innerHTML = kwArr().map(k=>'<span>'+esc(k)+'</span>').join('');
+
+  renderScanner();
+}
 
 document.querySelectorAll('.ftab').forEach(t=>{
   t.addEventListener('click',()=>{
     document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
-    const f = t.dataset.f;
-    document.querySelectorAll('.mention').forEach(m=>{
-      m.style.display = (f==='all'||m.dataset.sev===f)?'':'none';
-    });
+    activeFilter = t.dataset.f;
+    renderAll();
   });
 });
 
-/* Channels & KPIs computed from the tracked mentions */
-const chWrap = document.getElementById('channels');
-const byCh = {};
-MENTIONS.forEach(m=>{ (byCh[m.src] = byCh[m.src]||[]).push(m.sev); });
-Object.entries(byCh).forEach(([name,sevs])=>{
-  const c = sevs.length;
-  const p = Math.round(100*sevs.filter(s=>s==='good').length/c);
-  const x = Math.round(100*sevs.filter(s=>s==='attn').length/c);
-  const n = 100-p-x;
-  const r = document.createElement('div'); r.className='ch-row';
-  r.innerHTML = `<span>${name}</span>
-    <div class="ch-bar" role="img" aria-label="${name}: ${p}% positive, ${n}% neutral, ${x}% negative">
-      <i class="p" style="width:${p}%"></i><i class="n" style="width:${n}%"></i><i class="x" style="width:${x}%"></i>
-    </div><span class="ch-count">${c}</span>`;
-  chWrap.appendChild(r);
+/* ================= Scheduler ================= */
+function tick(){
+  const s = store.settings;
+  if(!scanning && s.intervalMin > 0 && Date.now() - store.lastScan >= s.intervalMin*60000){
+    runScan('scheduled');
+  } else {
+    renderScanner();
+  }
+}
+setInterval(tick, 60000);
+
+/* ================= Settings ================= */
+$('btnSettings').addEventListener('click',()=>{
+  $('setInterval').value = String(store.settings.intervalMin);
+  $('setRetention').value = String(store.settings.retentionDays);
+  $('setKeywords').value = store.settings.keywords;
+  $('setOverlay').classList.add('open');
+});
+$('sClose').addEventListener('click',()=>$('setOverlay').classList.remove('open'));
+$('setOverlay').addEventListener('click',e=>{ if(e.target===$('setOverlay')) $('setOverlay').classList.remove('open'); });
+$('sSave').addEventListener('click',()=>{
+  store.settings.intervalMin = parseInt($('setInterval').value,10);
+  store.settings.retentionDays = parseInt($('setRetention').value,10);
+  store.settings.keywords = $('setKeywords').value.trim() || DEFAULTS.keywords;
+  store.mentions = store.mentions.filter(m => new Date(m.time).getTime() >= cutoff());
+  saveStore(); renderAll();
+  $('setOverlay').classList.remove('open');
+});
+$('sClear').addEventListener('click',()=>{
+  store.mentions = []; store.lastLog = []; store.lastScan = 0;
+  saveStore(); renderAll();
 });
 
-const nAttn = MENTIONS.filter(m=>m.sev==='attn').length;
-const nGood = MENTIONS.filter(m=>m.sev==='good').length;
-document.getElementById('kMent').textContent = MENTIONS.length;
-document.getElementById('kChan').textContent = 'across '+Object.keys(byCh).length+' channels';
-document.getElementById('kAttn').textContent = nAttn;
-document.getElementById('kGood').textContent = nGood;
-const net = (nGood-nAttn)/MENTIONS.length;
-document.getElementById('kSent').textContent = (net>=0?'+':'')+net.toFixed(2);
+/* ================= Manual scan ================= */
+$('btnScan').addEventListener('click',()=>runScan('manual'));
 
-/* ---------------- Daily report ---------------- */
-const overlay = document.getElementById('overlay');
-const rBody = document.getElementById('rBody');
-const btn = document.getElementById('btnReport');
-document.getElementById('rClose').addEventListener('click',()=>overlay.classList.remove('open'));
+/* ================= Daily report ================= */
+const overlay = $('overlay');
+const rBody = $('rBody');
+const btnR = $('btnReport');
+$('rClose').addEventListener('click',()=>overlay.classList.remove('open'));
 overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
-document.getElementById('rCopy').addEventListener('click',()=>{
-  navigator.clipboard.writeText(rBody.innerText).then(()=>{ document.getElementById('rCopy').textContent='Copied ✓'; setTimeout(()=>document.getElementById('rCopy').textContent='Copy to clipboard',1500); });
+$('rCopy').addEventListener('click',()=>{
+  navigator.clipboard.writeText(rBody.innerText).then(()=>{ $('rCopy').textContent='Copied ✓'; setTimeout(()=>$('rCopy').textContent='Copy to clipboard',1500); });
 });
-document.getElementById('rAgain').addEventListener('click',generate);
-btn.addEventListener('click',()=>{ overlay.classList.add('open'); generate(); });
+$('rAgain').addEventListener('click',generate);
+btnR.addEventListener('click',()=>{ overlay.classList.add('open'); generate(); });
 
+function plain(html){ const d=document.createElement('div'); d.innerHTML=html; return d.textContent; }
 function fallbackReport(){
-  return `SUMMARY
-9 real public mentions tracked across 8 channels. Net sentiment +0.11 (4 positive, 3 needing attention, 2 neutral). Discussion centres on CourseReg allocation, graduate employment, and strong institutional news.
-
-NEEDS ATTENTION
-1. CourseReg bidding complaint (Reddit, 70 upvotes) — student missed all three allocation rounds. Recommend: coordinate with Registrar on an FAQ reply; monitor the thread.
-2. Graduate job-hunting report (Reddit, 100 upvotes, 28 comments) — detailed account fuelling employment-outcome discussion. Recommend: monitor sentiment; prepare employability data points.
-3. NUSWhispers #99161 — Y4 CS student anxious about FYP timing. Recommend: supportive comment routing to academic advisors and peer mentoring.
-
-POSITIVE HIGHLIGHTS
-• 2026 National Awards for 12 staff and faculty (LinkedIn, 70+ reactions) — showcase: repost across official channels.
-• Razer–NUS AI lab coverage in The Straits Times — amplify with researcher Q&A content.
-• 17 new faculty welcomed on @NUSComputing (X) — engage and cross-post.
-• TikTok day-in-the-life of a CS student — engage creator; strong open-house asset.
-
-WATCH
-CourseReg appeal window ongoing; expect elevated Reddit/Telegram volume. HardwareZone thread on degree value stable.`;
+  const items = allMentions();
+  const attn = items.filter(m=>m.sev==='attn');
+  const good = items.filter(m=>m.sev==='good');
+  const ch = new Set(items.map(m=>m.src)).size;
+  const net = items.length ? ((good.length-attn.length)/items.length) : 0;
+  let r = 'SUMMARY\n'+items.length+' mentions in the last '+store.settings.retentionDays+' day(s) across '+ch+' channels. Net sentiment '+(net>=0?'+':'')+net.toFixed(2)+' ('+good.length+' positive, '+attn.length+' needing attention, '+(items.length-good.length-attn.length)+' neutral).\n\nNEEDS ATTENTION\n';
+  r += attn.length ? attn.slice(0,5).map((m,i)=>(i+1)+'. '+m.src+' — '+plain(m.text).slice(0,140)+' ['+plain(m.tag)+']').join('\n') : 'None flagged in this window.';
+  r += '\n\nPOSITIVE HIGHLIGHTS\n';
+  r += good.length ? good.slice(0,5).map(m=>'• '+m.src+' — '+plain(m.text).slice(0,140)).join('\n') : 'None in this window.';
+  r += '\n\nSCANNER\nLast scan: '+(store.lastScan?new Date(store.lastScan).toLocaleString('en-SG'):'never')+'. Live sources: NUSWhispers, Hacker News. Reddit/X/LinkedIn/TikTok/press pending server pipeline.';
+  return r;
 }
 
 async function generate(){
-  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Generating…';
-  rBody.textContent = 'Analysing today\u2019s mentions…';
-  const data = MENTIONS.map(m=>`[${m.sev.toUpperCase()}] ${m.src} (${m.reach}): ${m.text.replace(/<[^>]+>/g,'')}`).join('\n');
+  btnR.disabled = true; btnR.innerHTML = '<span class="spin"></span>Generating…';
+  rBody.textContent = 'Analysing tracked mentions…';
+  const items = allMentions();
+  const data = items.map(m=>`[${m.sev.toUpperCase()}] ${m.src} (${m.reach}, ${fmtRel(m.time)}): ${plain(m.text)}`).join('\n');
   try{
     const res = await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000,
         messages:[{role:'user',content:
-`You are the media-monitoring analyst for NUS School of Computing's communications team. Write today's daily report from these tracked mentions:
+`You are the media-monitoring analyst for NUS School of Computing's communications team. Write today's daily report from these tracked mentions (last ${store.settings.retentionDays} days):
 
 ${data}
 
-Format in plain text with these sections in caps: SUMMARY (2-3 sentences with overall sentiment), NEEDS ATTENTION (numbered, each with a one-line recommended action), POSITIVE HIGHLIGHTS (bulleted, note which are showcase-worthy), WATCH (1-2 forward-looking notes). Be concise and practical. No markdown symbols other than numbers and bullet dots.`}]})
+Format in plain text with these sections in caps: SUMMARY (2-3 sentences with overall sentiment), NEEDS ATTENTION (numbered, each with a one-line recommended action; never suggest automated replies for wellbeing items — route those to the wellbeing team), POSITIVE HIGHLIGHTS (bulleted, note which are showcase-worthy), WATCH (1-2 forward-looking notes). Be concise and practical. No markdown symbols other than numbers and bullet dots.`}]})
     });
     const j = await res.json();
     const text = (j.content||[]).map(b=>b.text||'').join('\n').trim();
@@ -378,7 +594,13 @@ Format in plain text with these sections in caps: SUMMARY (2-3 sentences with ov
   }catch(e){
     rBody.textContent = fallbackReport();
   }
-  btn.disabled = false; btn.textContent = 'Generate daily report';
+  btnR.disabled = false; btnR.textContent = 'Generate daily report';
+}
+
+/* ================= Boot ================= */
+renderAll();
+if(store.settings.intervalMin > 0 && Date.now() - store.lastScan >= store.settings.intervalMin*60000){
+  runScan('startup');
 }
 </script>
 </body>
