@@ -157,26 +157,12 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 
 <div class="shell">
 
-  <!-- KPIs -->
+  <!-- KPIs (computed from tracked mentions) -->
   <div class="kpis">
-    <div class="kpi"><div class="lab">Mentions today</div><div class="val">47</div><div class="delta up">▲ 12 vs yesterday</div></div>
-    <div class="kpi attn"><div class="lab">Needs attention</div><div class="val">3</div><div class="delta down">2 unresolved &gt; 4h</div></div>
-    <div class="kpi good"><div class="lab">Positive highlights</div><div class="val">9</div><div class="delta up">▲ 4 vs yesterday</div></div>
-    <div class="kpi"><div class="lab">Net sentiment</div><div class="val">+0.31</div><div class="delta flat">7-day avg +0.26</div></div>
-  </div>
-
-  <!-- Pulse strip -->
-  <div class="pulse-card">
-    <div class="pulse-head">
-      <h2>24-hour sentiment pulse</h2>
-      <div class="legend">
-        <span><i style="background:var(--good)"></i>Positive</span>
-        <span><i style="background:#C6CBD6"></i>Neutral</span>
-        <span><i style="background:var(--alert)"></i>Negative</span>
-      </div>
-    </div>
-    <div class="pulse-track" id="pulseTrack" role="img" aria-label="Hourly mention volume and sentiment over the last 24 hours"></div>
-    <div class="pulse-hours" id="pulseHours"></div>
+    <div class="kpi"><div class="lab">Mentions tracked</div><div class="val" id="kMent">–</div><div class="delta flat" id="kChan"></div></div>
+    <div class="kpi attn"><div class="lab">Needs attention</div><div class="val" id="kAttn">–</div><div class="delta down">flagged for follow-up</div></div>
+    <div class="kpi good"><div class="lab">Positive highlights</div><div class="val" id="kGood">–</div><div class="delta up">showcase &amp; amplify items</div></div>
+    <div class="kpi"><div class="lab">Net sentiment</div><div class="val" id="kSent">–</div><div class="delta flat">of tracked mentions</div></div>
   </div>
 
   <div class="grid">
@@ -206,7 +192,7 @@ header{background:var(--blue);color:#fff;padding:0 28px}
           <span class="warm">job market</span>
           <span>National Awards</span>
           <span>Razer AI lab</span>
-          <span>internship</span>
+          <span>FYP</span>
           <span>NUSWhispers</span>
           <span>new faculty</span>
         </div>
@@ -222,7 +208,7 @@ header{background:var(--blue);color:#fff;padding:0 28px}
     </div>
   </div>
 
-  <p class="proto-note">Prototype · mentions link to real public posts · counts &amp; sentiment illustrative · alerts routed to #soc-comms on Slack &amp; Telegram in production</p>
+  <p class="proto-note">Prototype · all mentions are real public posts · metrics computed from tracked mentions · alerts routed to #soc-comms on Slack &amp; Telegram in production</p>
 </div>
 
 <!-- Report modal -->
@@ -273,22 +259,6 @@ const MENTIONS = [
   tag:'Community chatter', url:'https://t.me/s/nuscomputingclub'},
 ];
 
-const CHANNELS = [
- {name:'Reddit r/nus', p:35,n:40,x:25, c:14},
- {name:'X (Twitter)', p:30,n:45,x:25, c:9},
- {name:'NUSWhispers', p:20,n:50,x:30, c:7},
- {name:'LinkedIn', p:80,n:18,x:2, c:6},
- {name:'TikTok / IG', p:70,n:26,x:4, c:5},
- {name:'News / press', p:75,n:25,x:0, c:3},
- {name:'HardwareZone', p:25,n:65,x:10, c:3},
-];
-
-/* hourly pulse: [total mentions, pos, neu, neg] */
-const PULSE = [ [1,0,1,0],[0,0,0,0],[1,0,1,0],[0,0,0,0],[1,1,0,0],[0,0,0,0],
- [2,1,1,0],[3,1,1,1],[5,1,2,2],[6,2,2,2],[5,2,2,1],[4,2,1,1],
- [3,1,2,0],[2,1,1,0],[3,2,1,0],[2,1,1,0],[1,1,0,0],[2,1,1,0],
- [3,2,1,0],[4,2,1,1],[3,1,1,1],[2,1,1,0],[1,0,1,0],[1,0,1,0] ];
-
 /* ---------------- Render ---------------- */
 const todayLabel = new Date().toLocaleDateString('en-SG',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
 document.getElementById('todayLabel').textContent = todayLabel;
@@ -330,37 +300,31 @@ document.querySelectorAll('.ftab').forEach(t=>{
   });
 });
 
+/* Channels & KPIs computed from the tracked mentions */
 const chWrap = document.getElementById('channels');
-CHANNELS.forEach(c=>{
+const byCh = {};
+MENTIONS.forEach(m=>{ (byCh[m.src] = byCh[m.src]||[]).push(m.sev); });
+Object.entries(byCh).forEach(([name,sevs])=>{
+  const c = sevs.length;
+  const p = Math.round(100*sevs.filter(s=>s==='good').length/c);
+  const x = Math.round(100*sevs.filter(s=>s==='attn').length/c);
+  const n = 100-p-x;
   const r = document.createElement('div'); r.className='ch-row';
-  r.innerHTML = `<span>${c.name}</span>
-    <div class="ch-bar" role="img" aria-label="${c.name}: ${c.p}% positive, ${c.n}% neutral, ${c.x}% negative">
-      <i class="p" style="width:${c.p}%"></i><i class="n" style="width:${c.n}%"></i><i class="x" style="width:${c.x}%"></i>
-    </div><span class="ch-count">${c.c}</span>`;
+  r.innerHTML = `<span>${name}</span>
+    <div class="ch-bar" role="img" aria-label="${name}: ${p}% positive, ${n}% neutral, ${x}% negative">
+      <i class="p" style="width:${p}%"></i><i class="n" style="width:${n}%"></i><i class="x" style="width:${x}%"></i>
+    </div><span class="ch-count">${c}</span>`;
   chWrap.appendChild(r);
 });
 
-const track = document.getElementById('pulseTrack');
-const hours = document.getElementById('pulseHours');
-const maxV = Math.max(...PULSE.map(p=>p[0]),1);
-PULSE.forEach((p,h)=>{
-  const [tot,pos,neu,neg] = p;
-  const bar = document.createElement('div');
-  bar.className='hr';
-  bar.style.height = tot===0 ? '4px' : (10 + (tot/maxV)*54)+'px';
-  let col = '#E7E9EE';
-  if(tot>0){
-    if(neg>=pos && neg>0) col = 'var(--alert)';
-    else if(pos>neg && pos>=neu) col = 'var(--good)';
-    else col = '#C6CBD6';
-  }
-  bar.style.background = col;
-  bar.dataset.tip = `${String(h).padStart(2,'0')}:00 · ${tot} mention${tot===1?'':'s'} (+${pos}/○${neu}/−${neg})`;
-  track.appendChild(bar);
-  const lbl = document.createElement('span');
-  lbl.textContent = h%3===0 ? String(h).padStart(2,'0') : '';
-  hours.appendChild(lbl);
-});
+const nAttn = MENTIONS.filter(m=>m.sev==='attn').length;
+const nGood = MENTIONS.filter(m=>m.sev==='good').length;
+document.getElementById('kMent').textContent = MENTIONS.length;
+document.getElementById('kChan').textContent = 'across '+Object.keys(byCh).length+' channels';
+document.getElementById('kAttn').textContent = nAttn;
+document.getElementById('kGood').textContent = nGood;
+const net = (nGood-nAttn)/MENTIONS.length;
+document.getElementById('kSent').textContent = (net>=0?'+':'')+net.toFixed(2);
 
 /* ---------------- Daily report ---------------- */
 const overlay = document.getElementById('overlay');
@@ -376,7 +340,7 @@ btn.addEventListener('click',()=>{ overlay.classList.add('open'); generate(); })
 
 function fallbackReport(){
   return `SUMMARY
-47 mentions tracked across 7 channels. Net sentiment +0.31, above the 7-day average. Three items flagged for attention; four positive highlights, two suitable for showcase.
+9 real public mentions tracked across 8 channels. Net sentiment +0.11 (4 positive, 3 needing attention, 2 neutral). Discussion centres on CourseReg allocation, graduate employment, and strong institutional news.
 
 NEEDS ATTENTION
 1. CourseReg bidding complaint (Reddit, 70 upvotes) — student missed all three allocation rounds. Recommend: coordinate with Registrar on an FAQ reply; monitor the thread.
