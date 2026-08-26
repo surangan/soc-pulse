@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoC Pulse — Media Monitoring · NUS School of Computing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#003D7C;
+  --blue-deep:#022B57;
+  --orange:#EF7C00;
+  --paper:#F7F6F2;
+  --card:#FFFFFF;
+  --ink:#171C26;
+  --ink-soft:#5A6272;
+  --line:#E4E2DA;
+  --alert:#C7362F;
+  --alert-bg:#FBEEEC;
+  --good:#1F7A47;
+  --good-bg:#EAF5EE;
+  --neutral:#8A93A6;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- Header ---------- */
+header{background:var(--blue);color:#fff;padding:0 28px}
+.hd-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:18px;height:64px}
+.hd-mark{display:flex;align-items:baseline;gap:10px}
+.hd-mark .pulse-dot{width:10px;height:10px;border-radius:50%;background:var(--orange);display:inline-block;animation:beat 2.4s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.7}}
+.hd-mark h1{font-size:17px;font-weight:700;letter-spacing:.01em}
+.hd-mark span.sub{font-size:12px;color:#B9CCE3;font-weight:500}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.hd-date{font-family:var(--mono);font-size:12px;color:#B9CCE3}
+.btn-report{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:9px 16px;font-weight:600;font-size:13px;transition:background .15s}
+.btn-report:hover{background:#D66F00}
+.btn-report[disabled]{opacity:.6;cursor:wait}
+
+/* ---------- Shell ---------- */
+.shell{max-width:1280px;margin:0 auto;padding:22px 28px 60px}
+
+/* ---------- KPI strip ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi .lab{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
+.kpi .val{font-family:var(--mono);font-size:28px;font-weight:600;margin-top:2px}
+.kpi .delta{font-size:12px;font-family:var(--mono)}
+.kpi.attn{border-left:4px solid var(--alert)}
+.kpi.attn .val{color:var(--alert)}
+.kpi.good{border-left:4px solid var(--good)}
+.kpi.good .val{color:var(--good)}
+.up{color:var(--good)}.down{color:var(--alert)}.flat{color:var(--neutral)}
+
+/* ---------- Pulse strip (signature) ---------- */
+.pulse-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px 12px;margin-bottom:18px}
+.pulse-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.pulse-head h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue)}
+.pulse-head .legend{display:flex;gap:14px;font-size:11px;color:var(--ink-soft)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.pulse-track{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;align-items:end;height:64px}
+.pulse-track .hr{border-radius:3px 3px 0 0;min-height:4px;position:relative;transition:transform .12s}
+.pulse-track .hr:hover{transform:scaleY(1.06)}
+.pulse-track .hr::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-family:var(--mono);font-size:10px;padding:4px 7px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:5}
+.pulse-track .hr:hover::after{opacity:1}
+.pulse-hours{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--neutral);text-align:center}
+
+/* ---------- Main grid ---------- */
+.grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+
+/* Feed */
+.feed-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.feed-head{display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.feed-head h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-right:auto}
+.ftab{border:1px solid var(--line);background:#fff;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:600;color:var(--ink-soft)}
+.ftab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.ftab.active.t-attn{background:var(--alert);border-color:var(--alert)}
+.ftab.active.t-good{background:var(--good);border-color:var(--good)}
+.mention{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:4px 1fr;gap:14px}
+.mention:last-child{border-bottom:none}
+.mention .rail{border-radius:2px;background:var(--line)}
+.mention.sev-attn .rail{background:var(--alert)}
+.mention.sev-good .rail{background:var(--good)}
+.m-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.chip{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px;background:#EEF1F6;color:var(--ink-soft)}
+.chip.src{background:var(--blue);color:#fff}
+.chip.attn{background:var(--alert-bg);color:var(--alert)}
+.chip.good{background:var(--good-bg);color:var(--good)}
+.m-time{font-family:var(--mono);font-size:11px;color:var(--neutral);margin-left:auto}
+.m-text{font-size:13.5px;line-height:1.55;margin:2px 0 8px}
+.m-text b{background:#FFF0DE;font-weight:600;padding:0 2px;border-radius:2px}
+.m-meta{display:flex;gap:14px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);align-items:center;flex-wrap:wrap}
+.m-actions{margin-left:auto;display:flex;gap:8px}
+.m-actions button{border:1px solid var(--line);background:#fff;border-radius:5px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--ink-soft)}
+.m-actions button:hover{border-color:var(--blue);color:var(--blue)}
+.mention.handled{opacity:.45}
+.mention.handled .m-actions .b-handle{border-color:var(--good);color:var(--good)}
+
+/* Right rail */
+.rail-col{display:flex;flex-direction:column;gap:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.panel h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:12px}
+.ch-row{display:grid;grid-template-columns:110px 1fr 34px;gap:10px;align-items:center;margin-bottom:9px;font-size:12.5px}
+.ch-bar{height:8px;border-radius:4px;background:#EEF1F6;overflow:hidden;display:flex}
+.ch-bar i{display:block;height:100%}
+.ch-bar .p{background:var(--good)}.ch-bar .n{background:var(--neutral);opacity:.35}.ch-bar .x{background:var(--alert)}
+.ch-count{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);text-align:right}
+.kw{display:flex;flex-wrap:wrap;gap:7px}
+.kw span{font-family:var(--mono);font-size:11.5px;padding:4px 10px;border-radius:14px;border:1px solid var(--line);background:#fff}
+.kw span.hot{border-color:var(--alert);color:var(--alert);background:var(--alert-bg)}
+.kw span.warm{border-color:var(--orange);color:#B05B00;background:#FFF4E6}
+.watch li{font-size:12.5px;color:var(--ink-soft);margin:0 0 8px 16px}
+.watch li::marker{color:var(--orange)}
+
+/* Report modal */
+.overlay{position:fixed;inset:0;background:rgba(15,20,30,.55);display:none;align-items:flex-start;justify-content:center;padding:40px 20px;z-index:50;overflow:auto}
+.overlay.open{display:flex}
+.report{background:#fff;border-radius:12px;max-width:720px;width:100%;padding:28px 32px;position:relative}
+.report .r-head{display:flex;align-items:baseline;gap:12px;border-bottom:3px solid var(--blue);padding-bottom:12px;margin-bottom:16px}
+.report h2{font-size:18px;color:var(--blue)}
+.report .r-date{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+.report .r-close{margin-left:auto;border:none;background:#EEF1F6;border-radius:6px;width:30px;height:30px;font-size:15px}
+.report-body{font-size:13.5px;line-height:1.65;white-space:pre-wrap}
+.report-body h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin:16px 0 6px}
+.r-foot{margin-top:18px;display:flex;gap:10px}
+.r-foot button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:8px 14px;font-size:12.5px;font-weight:600}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.proto-note{margin-top:22px;font-size:11.5px;color:var(--neutral);font-family:var(--mono)}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.pulse-hours span:nth-child(odd){visibility:hidden}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-inner">
+    <div class="hd-mark">
+      <span class="pulse-dot" aria-hidden="true"></span>
+      <h1>SoC&nbsp;Pulse</h1>
+      <span class="sub">Media monitoring · NUS School of Computing</span>
+    </div>
+    <div class="hd-right">
+      <span class="hd-date" id="todayLabel"></span>
+      <button class="btn-report" id="btnReport">Generate daily report</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi"><div class="lab">Mentions today</div><div class="val">47</div><div class="delta up">▲ 12 vs yesterday</div></div>
+    <div class="kpi attn"><div class="lab">Needs attention</div><div class="val">3</div><div class="delta down">2 unresolved &gt; 4h</div></div>
+    <div class="kpi good"><div class="lab">Positive highlights</div><div class="val">9</div><div class="delta up">▲ 4 vs yesterday</div></div>
+    <div class="kpi"><div class="lab">Net sentiment</div><div class="val">+0.31</div><div class="delta flat">7-day avg +0.26</div></div>
+  </div>
+
+  <!-- Pulse strip -->
+  <div class="pulse-card">
+    <div class="pulse-head">
+      <h2>24-hour sentiment pulse</h2>
+      <div class="legend">
+        <span><i style="background:var(--good)"></i>Positive</span>
+        <span><i style="background:#C6CBD6"></i>Neutral</span>
+        <span><i style="background:var(--alert)"></i>Negative</span>
+      </div>
+    </div>
+    <div class="pulse-track" id="pulseTrack" role="img" aria-label="Hourly mention volume and sentiment over the last 24 hours"></div>
+    <div class="pulse-hours" id="pulseHours"></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Feed -->
+    <div class="feed-card">
+      <div class="feed-head">
+        <h2>Live mentions</h2>
+        <button class="ftab active" data-f="all">All</button>
+        <button class="ftab t-attn" data-f="attn">Needs attention</button>
+        <button class="ftab t-good" data-f="good">Positive</button>
+        <button class="ftab" data-f="neutral">Neutral</button>
+      </div>
+      <div id="feed"></div>
+    </div>
+
+    <!-- Right rail -->
+    <div class="rail-col">
+      <div class="panel">
+        <h2>Channels · today</h2>
+        <div id="channels"></div>
+      </div>
+      <div class="panel">
+        <h2>Trending keywords</zh-2>
+        <div class="kw">
+          <span class="hot">module registration</span>
+          <span class="warm">CS2030S workload</span>
+          <span>ICPC world finals</span>
+          <span>AI minor</span>
+          <span>internship</span>
+          <span>NUSWhispers</span>
+          <span>open house</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Watchlist</h2>
+        <ul class="watch">
+          <li>ModReg round 2 opens Thursday — expect volume spike on Reddit + Telegram</li>
+          <li>Straits Times feature on SoC AI research scheduled this week</li>
+          <li>Ongoing thread on HardwareZone re: admission cut-offs (monitoring, stable)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <p class="proto-note">Prototype · sample data for design review · alerts routed to #soc-comms on Slack &amp; Telegram in production</p>
+</div>
+
+<!-- Report modal -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+  <div class="report">
+    <div class="r-head">
+      <h2 id="rTitle">Daily media report</h2>
+      <span class="r-date" id="rDate"></span>
+      <button class="r-close" id="rClose" aria-label="Close report">✕</button>
+    </div>
+    <div class="report-body" id="rBody">Generating…</div>
+    <div class="r-foot">
+      <button id="rCopy">Copy to clipboard</button>
+      <button id="rAgain">Regenerate</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- Sample data ---------------- */
+const MENTIONS = [
+ {sev:'attn', src:'Reddit · r/nus', time:'09:42', reach:'18.2k views · 214 upvotes · 87 comments',
+  text:'Honestly the <b>module registration</b> system failed again this morning. Half my friends in SoC couldn\'t get core modules and the portal kept timing out. Third semester in a row — how is this acceptable for a computing school?',
+  tag:'System complaint · gaining traction'},
+ {sev:'attn', src:'X (Twitter)', time:'08:15', reach:'42.7k views · 890 reposts',
+  text:'Thread: my experience with a hostile TA in a <b>CS2030S</b> lab. Screenshots attached. @NUSComputing this needs a response. 🧵 1/7',
+  tag:'Conduct allegation · verify before responding'},
+ {sev:'attn', src:'NUSWhispers · Facebook', time:'Yesterday 22:31', reach:'3.1k reactions · 456 comments',
+  text:'#Whisper: Feeling completely burnt out as a Y2 SoC student. The <b>workload</b> is crushing and it feels like nobody in the school cares about mental health, only rankings.',
+  tag:'Student wellbeing · route to Student Affairs'},
+ {sev:'good', src:'LinkedIn', time:'10:05', reach:'6.4k reactions · 312 comments',
+  text:'Proud moment: our NUS Computing team just placed in the top 10 at the <b>ICPC World Finals</b>! Grateful to our coaches and the school for the support. 🏆',
+  tag:'Achievement · showcase candidate'},
+ {sev:'good', src:'The Straits Times', time:'07:30', reach:'National press',
+  text:'NUS School of Computing researchers unveil an <b>AI model for early sepsis detection</b>, now in pilot trials with two Singapore hospitals.',
+  tag:'Research coverage · amplify'},
+ {sev:'good', src:'TikTok', time:'Yesterday 19:12', reach:'128k views · 14.2k likes',
+  text:'"Day in my life as an NUS Computing student" — dorm, hackathon, supper at The Deck. Comments overwhelmingly positive about campus culture and the <b>AI minor</b>.',
+  tag:'Organic advocacy · engage'},
+ {sev:'good', src:'Reddit · r/nus', time:'11:20', reach:'4.9k views · 380 upvotes',
+  text:'Just want to say Prof. Tan\'s CS1101S lectures are the reason I fell in love with programming. SoC teaching quality is genuinely underrated.',
+  tag:'Teaching praise · showcase candidate'},
+ {sev:'neutral', src:'HardwareZone', time:'10:48', reach:'2.2k views · 41 replies',
+  text:'Comparing SoC CS vs Information Systems for my son — what are current <b>admission</b> cut-offs and job outcomes? Any parents here with experience?',
+  tag:'Prospective-student query · FAQ opportunity'},
+ {sev:'neutral', src:'Telegram · SoC channels', time:'09:10', reach:'~5.6k members',
+  text:'Reminder circulating about <b>open house</b> volunteer sign-ups; neutral chatter about exam timetables and internship application deadlines.',
+  tag:'Community chatter'},
+];
+
+const CHANNELS = [
+ {name:'Reddit r/nus', p:35,n:40,x:25, c:14},
+ {name:'X (Twitter)', p:30,n:45,x:25, c:9},
+ {name:'NUSWhispers', p:20,n:50,x:30, c:7},
+ {name:'LinkedIn', p:80,n:18,x:2, c:6},
+ {name:'TikTok / IG', p:70,n:26,x:4, c:5},
+ {name:'News / press', p:75,n:25,x:0, c:3},
+ {name:'HardwareZone', p:25,n:65,x:10, c:3},
+];
+
+/* hourly pulse: [total mentions, pos, neu, neg] */
+const PULSE = [ [1,0,1,0],[0,0,0,0],[1,0,1,0],[0,0,0,0],[1,1,0,0],[0,0,0,0],
+ [2,1,1,0],[3,1,1,1],[5,1,2,2],[6,2,2,2],[5,2,2,1],[4,2,1,1],
+ [3,1,2,0],[2,1,1,0],[3,2,1,0],[2,1,1,0],[1,1,0,0],[2,1,1,0],
+ [3,2,1,0],[4,2,1,1],[3,1,1,1],[2,1,1,0],[1,0,1,0],[1,0,1,0] ];
+
+/* ---------------- Render ---------------- */
+const todayLabel = new Date().toLocaleDateString('en-SG',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+document.getElementById('todayLabel').textContent = todayLabel;
+document.getElementById('rDate').textContent = todayLabel;
+
+const feed = document.getElementById('feed');
+MENTIONS.forEach((m,i)=>{
+  const d = document.createElement('div');
+  d.className = 'mention sev-'+m.sev; d.dataset.sev = m.sev;
+  const chip = m.sev==='attn' ? '<span class="chip attn">NEEDS ATTENTION</span>'
+             : m.sev==='good' ? '<span class="chip good">POSITIVE</span>'
+             : '<span class="chip">NEUTRAL</span>';
+  d.innerHTML = `<div class="rail"></div><div>
+    <div class="m-top"><span class="chip src">${m.src}</span>${chip}<span class="m-time">${m.time}</span></div>
+    <div class="m-text">${m.text}</div>
+    <div class="m-meta"><span>${m.reach}</span><span>· ${m.tag}</span>
+      <span class="m-actions">
+        <button class="b-open">Open source</button>
+        <button class="b-handle">Mark handled</button>
+      </span></div></div>`;
+  d.querySelector('.b-handle').addEventListener('click',()=>{
+    d.classList.toggle('handled');
+    d.querySelector('.b-handle').textContent = d.classList.contains('handled') ? 'Handled ✓' : 'Mark handled';
+  });
+  d.querySelector('.b-open').addEventListener('click',()=>{
+    alert('Prototype: in production this opens the original post in a new tab.');
+  });
+  feed.appendChild(d);
+});
+
+document.querySelectorAll('.ftab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const f = t.dataset.f;
+    document.querySelectorAll('.mention').forEach(m=>{
+      m.style.display = (f==='all'||m.dataset.sev===f)?'':'none';
+    });
+  });
+});
+
+const chWrap = document.getElementById('channels');
+CHANNELS.forEach(c=>{
+  const r = document.createElement('div'); r.className='ch-row';
+  r.innerHTML = `<span>${c.name}</span>
+    <div class="ch-bar" role="img" aria-label="${c.name}: ${c.p}% positive, ${c.n}% neutral, ${c.x}% negative">
+      <i class="p" style="width:${c.p}%"></i><i class="n" style="width:${c.n}%"></i><i class="x" style="width:${c.x}%"></i>
+    </div><span class="ch-count">${c.c}</span>`;
+  chWrap.appendChild(r);
+});
+
+const track = document.getElementById('pulseTrack');
+const hours = document.getElementById('pulseHours');
+const maxV = Math.max(...PULSE.map(p=>p[0]),1);
+PULSE.forEach((p,h)=>{
+  const [tot,pos,neu,neg] = p;
+  const bar = document.createElement('div');
+  bar.className='hr';
+  bar.style.height = tot===0 ? '4px' : (10 + (tot/maxV)*54)+'px';
+  let col = '#E7E9EE';
+  if(tot>0){
+    if(neg>=pos && neg>0) col = 'var(--alert)';
+    else if(pos>neg && pos>=neu) col = 'var(--good)';
+    else col = '#C6CBD6';
+  }
+  bar.style.background = col;
+  bar.dataset.tip = `${String(h).padStart(2,'0')}:00 · ${tot} mention${tot===1?'':'s'} (+${pos}/○${neu}/−${neg})`;
+  track.appendChild(bar);
+  const lbl = document.createElement('span');
+  lbl.textContent = h%3===0 ? String(h).padStart(2,'0') : '';
+  hours.appendChild(lbl);
+});
+
+/* ---------------- Daily report ---------------- */
+const overlay = document.getElementById('overlay');
+const rBody = document.getElementById('rBody');
+const btn = document.getElementById('btnReport');
+document.getElementById('rClose').addEventListener('click',()=>overlay.classList.remove('open'));
+overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
+document.getElementById('rCopy').addEventListener('click',()=>{
+  navigator.clipboard.writeText(rBody.innerText).then(()=>{ document.getElementById('rCopy').textContent='Copied ✓'; setTimeout(()=>document.getElementById('rCopy').textContent='Copy to clipboard',1500); });
+});
+document.getElementById('rAgain').addEventListener('click',generate);
+btn.addEventListener('click',()=>{ overlay.classList.add('open'); generate(); });
+
+function fallbackReport(){
+  return `SUMMARY
+47 mentions tracked across 7 channels. Net sentiment +0.31, above the 7-day average. Three items flagged for attention; nine positive highlights, two suitable for showcase.
+
+NEEDS ATTENTION
+1. Module registration outage (Reddit, 18.2k views) — recurring complaint, gaining traction. Recommend: coordinate with Registrar/ITU on a same-day acknowledgement post.
+2. TA conduct allegation thread (X, 42.7k views) — unverified. Recommend: do not respond publicly yet; escalate to Vice Dean (Education) for verification, prepare holding statement.
+3. Student burnout post (NUSWhispers, 3.1k reactions) — wellbeing signal. Recommend: route to Student Affairs; consider a supportive, non-defensive comment pointing to support resources.
+
+POSITIVE HIGHLIGHTS
+• ICPC World Finals top-10 (LinkedIn, 6.4k reactions) — showcase: repost on official channels, pitch to NUS News.
+• Sepsis-detection AI in Straits Times — amplify with researcher Q&A content.
+• TikTok day-in-the-life (128k views) — engage creator; strong open-house asset.
+• Organic teaching praise for CS1101S on Reddit — screenshot for internal kudos + testimonial bank.
+
+WATCH
+ModReg round 2 opens Thursday; expect elevated Reddit/Telegram volume. HardwareZone admissions thread stable.`;
+}
+
+async function generate(){
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Generating…';
+  rBody.textContent = 'Analysing today\u2019s mentions…';
+  const data = MENTIONS.map(m=>`[${m.sev.toUpperCase()}] ${m.src} (${m.reach}): ${m.text.replace(/<[^>]+>/g,'')}`).join('\n');
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000,
+        messages:[{role:'user',content:
+`You are the media-monitoring analyst for NUS School of Computing's communications team. Write today's daily report from these tracked mentions:
+
+${data}
+
+Format in plain text with these sections in caps: SUMMARY (2-3 sentences with overall sentiment), NEEDS ATTENTION (numbered, each with a one-line recommended action), POSITIVE HIGHLIGHTS (bulleted, note which are showcase-worthy), WATCH (1-2 forward-looking notes). Be concise and practical. No markdown symbols other than numbers and bullet dots.`}]})
+    });
+    const j = await res.json();
+    const text = (j.content||[]).map(b=>b.text||'').join('\n').trim();
+    rBody.textContent = text || fallbackReport();
+  }catch(e){
+    rBody.textContent = fallbackReport();
+  }
+  btn.disabled = false; btn.textContent = 'Generate daily report';
+}
+</script>
+</body>
+</html>
