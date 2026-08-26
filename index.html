@@ -314,7 +314,8 @@ MENTIONS.forEach((m,i)=>{
     d.querySelector('.b-handle').textContent = d.classList.contains('handled') ? 'Handled ✓' : 'Mark handled';
   });
   d.querySelector('.b-open').addEventListener('click',()=>{
-    alert('Prototype: in production this opens the original post in a new tab.');
+    const LINKS={'Reddit · r/nus':'https://www.reddit.com/r/nus/','X (Twitter)':'https://x.com/search?q=NUS%20Computing','NUSWhispers · Facebook':'https://www.facebook.com/nuswhispers','LinkedIn':'https://www.linkedin.com/search/results/content/?keywords=NUS%20Computing','The Straits Times':'https://www.straitstimes.com/tech','TikTok':'https://www.tiktok.com/search?q=NUS%20computing','HardwareZone':'https://forums.hardwarezone.com.sg/','Telegram · SoC channels':'https://t.me'};
+    window.open(LINKS[m.src]||'https://www.reddit.com/r/nus/','_blank','noopener');
   });
   feed.appendChild(d);
 });
