@@ -246,31 +246,31 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 const MENTIONS = [
  {sev:'attn', src:'Reddit · r/nus', time:'09:42', reach:'18.2k views · 214 upvotes · 87 comments',
   text:'Honestly the <b>module registration</b> system failed again this morning. Half my friends in SoC couldn\'t get core modules and the portal kept timing out. Third semester in a row — how is this acceptable for a computing school?',
-  tag:'System complaint · gaining traction'},
+  tag:'System complaint · gaining traction', url:'https://www.reddit.com/r/nus/search/?q=module+registration&restrict_sr=1'},
  {sev:'attn', src:'X (Twitter)', time:'08:15', reach:'42.7k views · 890 reposts',
   text:'Thread: my experience with a hostile TA in a <b>CS2030S</b> lab. Screenshots attached. @NUSComputing this needs a response. 🧵 1/7',
-  tag:'Conduct allegation · verify before responding'},
+  tag:'Conduct allegation · verify before responding', url:'https://x.com/search?q=NUS%20CS2030S&f=live'},
  {sev:'attn', src:'NUSWhispers · Facebook', time:'Yesterday 22:31', reach:'3.1k reactions · 456 comments',
   text:'#Whisper: Feeling completely burnt out as a Y2 SoC student. The <b>workload</b> is crushing and it feels like nobody in the school cares about mental health, only rankings.',
-  tag:'Student wellbeing · route to Student Affairs'},
+  tag:'Student wellbeing · route to Student Affairs', url:'https://www.facebook.com/nuswhispers'},
  {sev:'good', src:'LinkedIn', time:'10:05', reach:'6.4k reactions · 312 comments',
   text:'Proud moment: our NUS Computing team just placed in the top 10 at the <b>ICPC World Finals</b>! Grateful to our coaches and the school for the support. 🏆',
-  tag:'Achievement · showcase candidate'},
+  tag:'Achievement · showcase candidate', url:'https://www.linkedin.com/search/results/content/?keywords=NUS%20ICPC%20World%20Finals'},
  {sev:'good', src:'The Straits Times', time:'07:30', reach:'National press',
   text:'NUS School of Computing researchers unveil an <b>AI model for early sepsis detection</b>, now in pilot trials with two Singapore hospitals.',
-  tag:'Research coverage · amplify'},
+  tag:'Research coverage · amplify', url:'https://www.straitstimes.com/search?searchkey=NUS%20AI%20sepsis'},
  {sev:'good', src:'TikTok', time:'Yesterday 19:12', reach:'128k views · 14.2k likes',
   text:'"Day in my life as an NUS Computing student" — dorm, hackathon, supper at The Deck. Comments overwhelmingly positive about campus culture and the <b>AI minor</b>.',
-  tag:'Organic advocacy · engage'},
+  tag:'Organic advocacy · engage', url:'https://www.tiktok.com/search?q=day%20in%20my%20life%20NUS%20computing'},
  {sev:'good', src:'Reddit · r/nus', time:'11:20', reach:'4.9k views · 380 upvotes',
   text:'Just want to say Prof. Tan\'s CS1101S lectures are the reason I fell in love with programming. SoC teaching quality is genuinely underrated.',
-  tag:'Teaching praise · showcase candidate'},
+  tag:'Teaching praise · showcase candidate', url:'https://www.reddit.com/r/nus/search/?q=CS1101S&restrict_sr=1'},
  {sev:'neutral', src:'HardwareZone', time:'10:48', reach:'2.2k views · 41 replies',
   text:'Comparing SoC CS vs Information Systems for my son — what are current <b>admission</b> cut-offs and job outcomes? Any parents here with experience?',
-  tag:'Prospective-student query · FAQ opportunity'},
+  tag:'Prospective-student query · FAQ opportunity', url:'https://www.google.com/search?q=site%3Aforums.hardwarezone.com.sg+NUS+computing+admission'},
  {sev:'neutral', src:'Telegram · SoC channels', time:'09:10', reach:'~5.6k members',
   text:'Reminder circulating about <b>open house</b> volunteer sign-ups; neutral chatter about exam timetables and internship application deadlines.',
-  tag:'Community chatter'},
+  tag:'Community chatter', url:'https://www.google.com/search?q=NUS%20computing%20telegram%20channel'},
 ];
 
 const CHANNELS = [
@@ -314,8 +314,7 @@ MENTIONS.forEach((m,i)=>{
     d.querySelector('.b-handle').textContent = d.classList.contains('handled') ? 'Handled ✓' : 'Mark handled';
   });
   d.querySelector('.b-open').addEventListener('click',()=>{
-    const LINKS={'Reddit · r/nus':'https://www.reddit.com/r/nus/','X (Twitter)':'https://x.com/search?q=NUS%20Computing','NUSWhispers · Facebook':'https://www.facebook.com/nuswhispers','LinkedIn':'https://www.linkedin.com/search/results/content/?keywords=NUS%20Computing','The Straits Times':'https://www.straitstimes.com/tech','TikTok':'https://www.tiktok.com/search?q=NUS%20computing','HardwareZone':'https://forums.hardwarezone.com.sg/','Telegram · SoC channels':'https://t.me'};
-    window.open(LINKS[m.src]||'https://www.reddit.com/r/nus/','_blank','noopener');
+    window.open(m.url,'_blank','noopener');
   });
   feed.appendChild(d);
 });
