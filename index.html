@@ -202,27 +202,27 @@ header{background:var(--blue);color:#fff;padding:0 28px}
       <div class="panel">
         <h2>Trending keywords</h2>
         <div class="kw">
-          <span class="hot">module registration</span>
-          <span class="warm">CS2030S workload</span>
-          <span>ICPC world finals</span>
-          <span>AI minor</span>
+          <span class="hot">coursereg</span>
+          <span class="warm">job market</span>
+          <span>National Awards</span>
+          <span>Razer AI lab</span>
           <span>internship</span>
           <span>NUSWhispers</span>
-          <span>open house</span>
+          <span>new faculty</span>
         </div>
       </div>
       <div class="panel">
         <h2>Watchlist</h2>
         <ul class="watch">
-          <li>ModReg round 2 opens Thursday — expect volume spike on Reddit + Telegram</li>
-          <li>Straits Times feature on SoC AI research scheduled this week</li>
-          <li>Ongoing thread on HardwareZone re: admission cut-offs (monitoring, stable)</li>
+          <li>CourseReg appeal window ongoing — expect elevated Reddit + Telegram volume</li>
+          <li>Razer–NUS AI lab in national press — window to pitch researcher features</li>
+          <li>HardwareZone thread on degree value (monitoring, stable)</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <p class="proto-note">Prototype · sample data for design review · alerts routed to #soc-comms on Slack &amp; Telegram in production</p>
+  <p class="proto-note">Prototype · mentions link to real public posts · counts &amp; sentiment illustrative · alerts routed to #soc-comms on Slack &amp; Telegram in production</p>
 </div>
 
 <!-- Report modal -->
@@ -244,33 +244,33 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 <script>
 /* ---------------- Sample data ---------------- */
 const MENTIONS = [
- {sev:'attn', src:'Reddit · r/nus', time:'09:42', reach:'18.2k views · 214 upvotes · 87 comments',
-  text:'Honestly the <b>module registration</b> system failed again this morning. Half my friends in SoC couldn\'t get core modules and the portal kept timing out. Third semester in a row — how is this acceptable for a computing school?',
-  tag:'System complaint · gaining traction', url:'https://www.reddit.com/r/nus/search/?q=module+registration&restrict_sr=1'},
- {sev:'attn', src:'X (Twitter)', time:'08:15', reach:'42.7k views · 890 reposts',
-  text:'Thread: my experience with a hostile TA in a <b>CS2030S</b> lab. Screenshots attached. @NUSComputing this needs a response. 🧵 1/7',
-  tag:'Conduct allegation · verify before responding', url:'https://x.com/search?q=NUS%20CS2030S&f=live'},
- {sev:'attn', src:'NUSWhispers · Facebook', time:'Yesterday 22:31', reach:'3.1k reactions · 456 comments',
-  text:'#Whisper: Feeling completely burnt out as a Y2 SoC student. The <b>workload</b> is crushing and it feels like nobody in the school cares about mental health, only rankings.',
-  tag:'Student wellbeing · route to Student Affairs', url:'https://www.facebook.com/nuswhispers'},
- {sev:'good', src:'LinkedIn', time:'10:05', reach:'6.4k reactions · 312 comments',
-  text:'Proud moment: our NUS Computing team just placed in the top 10 at the <b>ICPC World Finals</b>! Grateful to our coaches and the school for the support. 🏆',
-  tag:'Achievement · showcase candidate', url:'https://www.linkedin.com/search/results/content/?keywords=NUS%20ICPC%20World%20Finals'},
- {sev:'good', src:'The Straits Times', time:'07:30', reach:'National press',
-  text:'NUS School of Computing researchers unveil an <b>AI model for early sepsis detection</b>, now in pilot trials with two Singapore hospitals.',
-  tag:'Research coverage · amplify', url:'https://www.straitstimes.com/search?searchkey=NUS%20AI%20sepsis'},
- {sev:'good', src:'TikTok', time:'Yesterday 19:12', reach:'128k views · 14.2k likes',
-  text:'"Day in my life as an NUS Computing student" — dorm, hackathon, supper at The Deck. Comments overwhelmingly positive about campus culture and the <b>AI minor</b>.',
-  tag:'Organic advocacy · engage', url:'https://www.tiktok.com/search?q=day%20in%20my%20life%20NUS%20computing'},
- {sev:'good', src:'Reddit · r/nus', time:'11:20', reach:'4.9k views · 380 upvotes',
-  text:'Just want to say Prof. Tan\'s CS1101S lectures are the reason I fell in love with programming. SoC teaching quality is genuinely underrated.',
-  tag:'Teaching praise · showcase candidate', url:'https://www.reddit.com/r/nus/search/?q=CS1101S&restrict_sr=1'},
- {sev:'neutral', src:'HardwareZone', time:'10:48', reach:'2.2k views · 41 replies',
-  text:'Comparing SoC CS vs Information Systems for my son — what are current <b>admission</b> cut-offs and job outcomes? Any parents here with experience?',
-  tag:'Prospective-student query · FAQ opportunity', url:'https://www.google.com/search?q=site%3Aforums.hardwarezone.com.sg+NUS+computing+admission'},
- {sev:'neutral', src:'Telegram · SoC channels', time:'09:10', reach:'~5.6k members',
-  text:'Reminder circulating about <b>open house</b> volunteer sign-ups; neutral chatter about exam timetables and internship application deadlines.',
-  tag:'Community chatter', url:'https://www.google.com/search?q=NUS%20computing%20telegram%20channel'},
+ {sev:'attn', src:'Reddit · r/nus', time:'4 Aug', reach:'70 upvotes · 4 comments',
+  text:'Student reports <b>missing all three rounds</b> of CourseReg bidding and still being without needed classes — thread drawing sympathy and similar stories.',
+  tag:'CourseReg complaint · monitor + FAQ reply', url:'https://www.reddit.com/r/nus/comments/1vf4r6z/missed_all_three_rounds_of_bidding/'},
+ {sev:'attn', src:'Reddit · r/nus', time:'1 Aug', reach:'100 upvotes · 28 comments',
+  text:'A fresh grad shares a detailed <b>job hunting report</b> — applications sent, response rates and outcomes — fuelling discussion on the tech job market for computing grads.',
+  tag:'Employment sentiment · monitor', url:'https://www.reddit.com/r/nus/comments/1vcqqch/graduate_job_hunting_report/'},
+ {sev:'attn', src:'NUSWhispers', time:'#99161', reach:'Public confession',
+  text:'A Year 4 <b>computer science</b> student asks Prof Ben and computing seniors for advice as friends begin their FYP — worried about falling behind.',
+  tag:'Student concern · supportive reply / route to advisors', url:'https://www.nuswhispers.com/confession/99161'},
+ {sev:'good', src:'LinkedIn', time:'2w ago', reach:'70+ reactions',
+  text:'NUS Computing congratulates the 12 staff and faculty members who received the <b>2026 National Awards</b>.',
+  tag:'Achievement · showcase candidate', url:'https://www.linkedin.com/posts/nuscomputing_singapore-nus-nuscomputing-activity-7493496903205220352-LGx4'},
+ {sev:'good', src:'The Straits Times', time:'5 Aug', reach:'National press',
+  text:'Coverage of the new <b>Razer–NUS AI lab</b>, which will build game companions "beyond Tamagotchi" levels of intelligence.',
+  tag:'Research coverage · amplify', url:'https://www.straitstimes.com/tech/new-razer-nus-ai-lab-to-build-companions-beyond-tamagotchi-gaming-intelligence'},
+ {sev:'good', src:'TikTok', time:'Sep 2025', reach:'Public video',
+  text:'"<b>Life as a Computer Science student at NUS</b>" — a day-in-the-life video showing campus, classes and study routine.',
+  tag:'Organic advocacy · engage creator', url:'https://www.tiktok.com/@user3869533654120/video/7545866925272763656'},
+ {sev:'good', src:'X (Twitter)', time:'1w ago', reach:'@NUSComputing official',
+  text:'The school welcomes <b>17 new faculty members</b>, with expertise spanning trustworthy AI to platform economics.',
+  tag:'Community news · engage', url:'https://x.com/NUSComputing/status/2088180427043586066'},
+ {sev:'neutral', src:'HardwareZone', time:'Jun 2025', reach:'Active forum thread',
+  text:'Forum thread debates whether it is <b>still a good time</b> to get an NUS Computing degree, given growing competition in the CS field.',
+  tag:'Prospective-student query · FAQ opportunity', url:'https://forums.hardwarezone.com.sg/threads/is-it-still-a-good-time-to-get-nus-computing-degree.7135350/'},
+ {sev:'neutral', src:'Telegram · SoC channels', time:'Ongoing', reach:'Official club channel',
+  text:'NUS Students\' Computing Club announcement channel — <b>events and updates</b> for the SoC community.',
+  tag:'Community chatter', url:'https://t.me/s/nuscomputingclub'},
 ];
 
 const CHANNELS = [
@@ -376,21 +376,21 @@ btn.addEventListener('click',()=>{ overlay.classList.add('open'); generate(); })
 
 function fallbackReport(){
   return `SUMMARY
-47 mentions tracked across 7 channels. Net sentiment +0.31, above the 7-day average. Three items flagged for attention; nine positive highlights, two suitable for showcase.
+47 mentions tracked across 7 channels. Net sentiment +0.31, above the 7-day average. Three items flagged for attention; four positive highlights, two suitable for showcase.
 
 NEEDS ATTENTION
-1. Module registration outage (Reddit, 18.2k views) — recurring complaint, gaining traction. Recommend: coordinate with Registrar/ITU on a same-day acknowledgement post.
-2. TA conduct allegation thread (X, 42.7k views) — unverified. Recommend: do not respond publicly yet; escalate to Vice Dean (Education) for verification, prepare holding statement.
-3. Student burnout post (NUSWhispers, 3.1k reactions) — wellbeing signal. Recommend: route to Student Affairs; consider a supportive, non-defensive comment pointing to support resources.
+1. CourseReg bidding complaint (Reddit, 70 upvotes) — student missed all three allocation rounds. Recommend: coordinate with Registrar on an FAQ reply; monitor the thread.
+2. Graduate job-hunting report (Reddit, 100 upvotes, 28 comments) — detailed account fuelling employment-outcome discussion. Recommend: monitor sentiment; prepare employability data points.
+3. NUSWhispers #99161 — Y4 CS student anxious about FYP timing. Recommend: supportive comment routing to academic advisors and peer mentoring.
 
 POSITIVE HIGHLIGHTS
-• ICPC World Finals top-10 (LinkedIn, 6.4k reactions) — showcase: repost on official channels, pitch to NUS News.
-• Sepsis-detection AI in Straits Times — amplify with researcher Q&A content.
-• TikTok day-in-the-life (128k views) — engage creator; strong open-house asset.
-• Organic teaching praise for CS1101S on Reddit — screenshot for internal kudos + testimonial bank.
+• 2026 National Awards for 12 staff and faculty (LinkedIn, 70+ reactions) — showcase: repost across official channels.
+• Razer–NUS AI lab coverage in The Straits Times — amplify with researcher Q&A content.
+• 17 new faculty welcomed on @NUSComputing (X) — engage and cross-post.
+• TikTok day-in-the-life of a CS student — engage creator; strong open-house asset.
 
 WATCH
-ModReg round 2 opens Thursday; expect elevated Reddit/Telegram volume. HardwareZone admissions thread stable.`;
+CourseReg appeal window ongoing; expect elevated Reddit/Telegram volume. HardwareZone thread on degree value stable.`;
 }
 
 async function generate(){
