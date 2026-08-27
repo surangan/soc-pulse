@@ -92,7 +92,8 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 .rail-col{display:flex;flex-direction:column;gap:18px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
 .panel h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:12px}
-.ch-row{display:grid;grid-template-columns:110px 1fr 34px;gap:10px;align-items:center;margin-bottom:9px;font-size:12.5px}
+.ch-row{display:grid;grid-template-columns:110px 1fr 34px;gap:10px;align-items:center;margin-bottom:9px;font-size:12.5px;cursor:pointer}
+.ch-row.sel span:first-child{color:var(--blue);font-weight:700}
 .ch-bar{height:8px;border-radius:4px;background:#EEF1F6;overflow:hidden;display:flex}
 .ch-bar i{display:block;height:100%}
 .ch-bar .p{background:var(--good)}.ch-bar .n{background:var(--neutral);opacity:.35}.ch-bar .x{background:var(--alert)}
@@ -123,6 +124,8 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 .set-row label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:5px}
 .set-row select,.set-row input{width:100%;font-family:var(--mono);font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
 .set-note{font-size:12px;color:var(--neutral);margin-top:4px;line-height:1.5}
+.ch-checks{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px}
+.ch-checks label{display:flex;align-items:center;gap:7px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink);margin:0;font-size:13px}
 .btn-primary{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:9px 16px;font-weight:600;font-size:13px}
 
 .proto-note{margin-top:22px;font-size:11.5px;color:var(--neutral);font-family:var(--mono)}
@@ -189,7 +192,7 @@ header{background:var(--blue);color:#fff;padding:0 28px}
     </div>
   </div>
 
-  <p class="proto-note">All mentions are real public posts · metrics computed from tracked mentions · NUSWhispers &amp; Hacker News scanned live in this browser · Reddit / X / LinkedIn / TikTok / press require the server-side pipeline · history is stored in this browser only</p>
+  <p class="proto-note">All mentions are real public posts · metrics computed from tracked mentions · NUSWhispers, Reddit, Bluesky &amp; Hacker News scanned live in this browser · X / LinkedIn / TikTok / press require the server-side pipeline · the retention window applies to every mention · history is stored in this browser only</p>
 </div>
 
 <!-- Report modal -->
@@ -236,12 +239,22 @@ header{background:var(--blue);color:#fff;padding:0 28px}
         <option value="14">2 weeks</option>
         <option value="30">30 days</option>
       </select>
-      <div class="set-note">Older scanned mentions are pruned automatically. Curated seed items are kept.</div>
+      <div class="set-note">Everything older than this window is pruned from the dashboard automatically.</div>
+    </div>
+    <div class="set-row">
+      <label>Channels to scan</label>
+      <div class="ch-checks">
+        <label><input type="checkbox" id="chW"> NUSWhispers</label>
+        <label><input type="checkbox" id="chR"> Reddit &middot; r/nus</label>
+        <label><input type="checkbox" id="chB"> Bluesky</label>
+        <label><input type="checkbox" id="chH"> Hacker News</label>
+      </div>
+      <div class="set-note">Unticked channels are skipped by the scanner and hidden from the dashboard.</div>
     </div>
     <div class="set-row">
       <label for="setKeywords">Tracked keywords (comma-separated)</label>
       <input id="setKeywords" type="text" spellcheck="false">
-      <div class="set-note">Used to query NUSWhispers and Hacker News, and to match relevance.</div>
+      <div class="set-note">These keywords query all live channels and match posts' relevance.</div>
     </div>
     <div class="r-foot">
       <button class="btn-primary" id="sSave">Save settings</button>
@@ -254,10 +267,11 @@ header{background:var(--blue);color:#fff;padding:0 28px}
 /* ================= Storage & settings ================= */
 const LS_KEY = 'socpulse.v1';
 const DEFAULTS = { intervalMin: 60, retentionDays: 7,
+  channels: { whispers:true, hn:true, bsky:true, reddit:true },
   keywords: 'computing, computer science, coursereg, CS1101S, CS2030S, FYP, SoC' };
 
 function loadStore(){
-  try{ const s = JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.settings) return s; }catch(e){}
+  try{ const s = JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.settings){ s.settings.channels = Object.assign({}, DEFAULTS.channels, s.settings.channels||{}); return s; } }catch(e){}
   return { settings: {...DEFAULTS}, mentions: [], handled: [], lastScan: 0, lastLog: [] };
 }
 let store = loadStore();
@@ -307,9 +321,17 @@ function fmtRel(iso){
   return new Date(t).toLocaleDateString('en-SG',{day:'numeric',month:'short'});
 }
 function cutoff(){ return Date.now() - store.settings.retentionDays*86400000; }
+function chKey(src){
+  if(src==='NUSWhispers') return 'whispers';
+  if(src==='Hacker News') return 'hn';
+  if(src==='Bluesky') return 'bsky';
+  if(src.indexOf('Reddit')===0) return 'reddit';
+  return null;
+}
 function allMentions(){
-  const auto = store.mentions.filter(m => new Date(m.time).getTime() >= cutoff());
-  return [...CURATED, ...auto].sort((a,b)=> new Date(b.time)-new Date(a.time));
+  const ch = store.settings.channels;
+  const keep = m => new Date(m.time).getTime() >= cutoff() && (chKey(m.src)===null || ch[chKey(m.src)]);
+  return [...CURATED.filter(keep), ...store.mentions.filter(keep)].sort((a,b)=> new Date(b.time)-new Date(a.time));
 }
 
 /* ================= Classification (heuristic; humans stay in the loop) ================= */
@@ -344,20 +366,76 @@ async function scanNUSWhispers(){
     for(const c of list){
       const id = 'w'+c.confession_id;
       if(seen.has(id)) continue;
-      let when = new Date();
-      if(c.created_on){ when = (/^\d+$/.test(''+c.created_on)) ? new Date(c.created_on*1000) : new Date(c.created_on); }
-      if(isNaN(when.getTime()) || when.getTime() < cutoff()) continue;
+      let when = null;
+      const ts = c.created_at || c.status_updated_at || '';
+      if(ts) when = new Date((''+ts).replace(' ','T'));
+      if(!when || isNaN(when.getTime()) || when.getTime() < cutoff()) continue;
       const body = (c.content||'').replace(/\s+/g,' ').trim();
       if(!body) continue;
       const cls = classify(body);
       seen.add(id);
       out.push({ id, sev:cls.sev, src:'NUSWhispers', time:when.toISOString(),
-        reach:'Confession #'+c.confession_id + (c.views ? ' · '+c.views+' views' : ''),
+        reach:'Confession #'+c.confession_id+' · '+(c.views||0)+' views'+(c.fb_like_count?' · '+c.fb_like_count+' likes':''),
         text: esc(body.length>240 ? body.slice(0,240)+'…' : body),
         tag: cls.tag, url:'https://www.nuswhispers.com/confession/'+c.confession_id, auto:true });
     }
   }
   if(!reached) throw new Error('unreachable');
+  return out;
+}
+
+async function fetchJSONv(urls, ms){
+  let err;
+  for(const u of urls){ try{ return await fetchJSON(u, ms); }catch(e){ err=e; } }
+  throw err || new Error('unreachable');
+}
+function prox(u){ return [u,
+  'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
+  'https://api.allorigins.win/raw?url='+encodeURIComponent(u)]; }
+
+async function scanReddit(){
+  const seen = new Set(store.mentions.map(m=>m.id));
+  const out = [];
+  const j = await fetchJSONv(prox('https://www.reddit.com/r/nus/new.json?limit=25'), 12000);
+  const kids = (j.data && j.data.children) || [];
+  for(const k of kids){
+    const p = k.data || {};
+    const id = 'r'+p.id;
+    if(seen.has(id)) continue;
+    const when = new Date((p.created_utc||0)*1000);
+    if(isNaN(when.getTime()) || when.getTime() < cutoff()) continue;
+    const body = ((p.title||'')+'. '+(p.selftext||'')).replace(/\s+/g,' ').trim();
+    const rel = kwArr().some(kw=>body.toLowerCase().includes(kw.toLowerCase()));
+    if(!rel) continue;
+    const cls = classify(body);
+    seen.add(id);
+    out.push({ id, sev:cls.sev, src:'Reddit \u00b7 r/nus', time:when.toISOString(),
+      reach:(p.ups||0)+' upvotes \u00b7 '+(p.num_comments||0)+' comments',
+      text: esc(body.length>240 ? body.slice(0,240)+'\u2026' : body),
+      tag: cls.tag, url:'https://www.reddit.com'+p.permalink, auto:true });
+  }
+  return out;
+}
+
+async function scanBluesky(){
+  const seen = new Set(store.mentions.map(m=>m.id));
+  const out = [];
+  const j = await fetchJSONv(['https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q='+encodeURIComponent('NUS computing')+'&limit=20'], 12000);
+  for(const p of (j.posts||[])){
+    const rkey = (p.uri||'').split('/').pop();
+    const id = 'b'+rkey;
+    if(seen.has(id)) continue;
+    const when = new Date(p.record && p.record.createdAt);
+    if(isNaN(when.getTime()) || when.getTime() < cutoff()) continue;
+    const body = ((p.record && p.record.text)||'').replace(/\s+/g,' ').trim();
+    if(!/\bnus\b/i.test(body)) continue;
+    const cls = classify(body);
+    seen.add(id);
+    out.push({ id, sev:cls.sev, src:'Bluesky', time:when.toISOString(),
+      reach:(p.likeCount||0)+' likes \u00b7 '+(p.repostCount||0)+' reposts',
+      text: esc(body.length>240 ? body.slice(0,240)+'\u2026' : body),
+      tag: cls.tag, url:'https://bsky.app/profile/'+((p.author&&p.author.handle)||'')+'/post/'+rkey, auto:true });
+  }
   return out;
 }
 
@@ -390,7 +468,12 @@ async function runScan(trigger){
   const btn = $('btnScan'); btn.disabled = true; btn.textContent = 'Scanning…';
   $('scanStatus').innerHTML = '<b>Scanning…</b> ('+esc(trigger||'manual')+')';
   const log = [];
-  const jobs = [ ['NUSWhispers', scanNUSWhispers], ['Hacker News', scanHackerNews] ];
+  const ch = store.settings.channels;
+  const jobs = [];
+  if(ch.whispers) jobs.push(['NUSWhispers', scanNUSWhispers]); else log.push({cls:'skip', text:'NUSWhispers: off in settings'});
+  if(ch.reddit) jobs.push(['Reddit \u00b7 r/nus', scanReddit]); else log.push({cls:'skip', text:'Reddit: off in settings'});
+  if(ch.bsky) jobs.push(['Bluesky', scanBluesky]); else log.push({cls:'skip', text:'Bluesky: off in settings'});
+  if(ch.hn) jobs.push(['Hacker News', scanHackerNews]); else log.push({cls:'skip', text:'Hacker News: off in settings'});
   for(const [name, fn] of jobs){
     try{
       const items = await fn();
@@ -400,7 +483,7 @@ async function runScan(trigger){
       log.push({cls:'err', text:name+': unreachable'});
     }
   }
-  log.push({cls:'skip', text:'Reddit, X, LinkedIn, TikTok, press: server-side pipeline required'});
+  log.push({cls:'skip', text:'X, LinkedIn, TikTok, press: server-side pipeline required'});
   store.mentions = store.mentions.filter(m => new Date(m.time).getTime() >= cutoff());
   store.lastScan = Date.now();
   store.lastLog = log;
@@ -435,12 +518,14 @@ $('todayLabel').textContent = todayLabel;
 $('rDate').textContent = todayLabel;
 
 let activeFilter = 'all';
+let activeChannel = null;
 function renderAll(){
   const items = allMentions();
   const feed = $('feed'); feed.innerHTML = '';
   let shown = 0;
   items.forEach(m=>{
     if(activeFilter!=='all' && m.sev!==activeFilter) return;
+    if(activeChannel && m.src!==activeChannel) return;
     shown++;
     const d = document.createElement('div');
     d.className = 'mention sev-'+m.sev + (store.handled.includes(m.id)?' handled':'');
@@ -478,7 +563,9 @@ function renderAll(){
     const p = Math.round(100*sevs.filter(s=>s==='good').length/c);
     const x = Math.round(100*sevs.filter(s=>s==='attn').length/c);
     const n = 100-p-x;
-    const r = document.createElement('div'); r.className='ch-row';
+    const r = document.createElement('div'); r.className='ch-row'+(activeChannel===name?' sel':'');
+    r.title = 'Click to filter the feed by this channel';
+    r.addEventListener('click',()=>{ activeChannel = (activeChannel===name?null:name); renderAll(); });
     r.innerHTML = `<span>${esc(name)}</span>
       <div class="ch-bar" role="img" aria-label="${esc(name)}: ${p}% positive, ${n}% neutral, ${x}% negative">
         <i class="p" style="width:${p}%"></i><i class="n" style="width:${n}%"></i><i class="x" style="width:${x}%"></i>
@@ -525,6 +612,9 @@ $('btnSettings').addEventListener('click',()=>{
   $('setInterval').value = String(store.settings.intervalMin);
   $('setRetention').value = String(store.settings.retentionDays);
   $('setKeywords').value = store.settings.keywords;
+  const cc = store.settings.channels;
+  $('chW').checked = !!cc.whispers; $('chH').checked = !!cc.hn;
+  $('chB').checked = !!cc.bsky; $('chR').checked = !!cc.reddit;
   $('setOverlay').classList.add('open');
 });
 $('sClose').addEventListener('click',()=>$('setOverlay').classList.remove('open'));
@@ -533,6 +623,7 @@ $('sSave').addEventListener('click',()=>{
   store.settings.intervalMin = parseInt($('setInterval').value,10);
   store.settings.retentionDays = parseInt($('setRetention').value,10);
   store.settings.keywords = $('setKeywords').value.trim() || DEFAULTS.keywords;
+  store.settings.channels = { whispers:$('chW').checked, hn:$('chH').checked, bsky:$('chB').checked, reddit:$('chR').checked };
   store.mentions = store.mentions.filter(m => new Date(m.time).getTime() >= cutoff());
   saveStore(); renderAll();
   $('setOverlay').classList.remove('open');
@@ -568,7 +659,7 @@ function fallbackReport(){
   r += attn.length ? attn.slice(0,5).map((m,i)=>(i+1)+'. '+m.src+' — '+plain(m.text).slice(0,140)+' ['+plain(m.tag)+']').join('\n') : 'None flagged in this window.';
   r += '\n\nPOSITIVE HIGHLIGHTS\n';
   r += good.length ? good.slice(0,5).map(m=>'• '+m.src+' — '+plain(m.text).slice(0,140)).join('\n') : 'None in this window.';
-  r += '\n\nSCANNER\nLast scan: '+(store.lastScan?new Date(store.lastScan).toLocaleString('en-SG'):'never')+'. Live sources: NUSWhispers, Hacker News. Reddit/X/LinkedIn/TikTok/press pending server pipeline.';
+  r += '\n\nSCANNER\nLast scan: '+(store.lastScan?new Date(store.lastScan).toLocaleString('en-SG'):'never')+'. Live sources: NUSWhispers, Reddit, Bluesky, Hacker News. X/LinkedIn/TikTok/press pending server pipeline.';
   return r;
 }
 
