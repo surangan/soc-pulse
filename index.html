@@ -358,27 +358,36 @@ async function scanNUSWhispers(){
   const seen = new Set(store.mentions.map(m=>m.id));
   const out = [];
   let reached = false;
+  const addConf = (c)=>{
+    const id = 'w'+c.confession_id;
+    if(seen.has(id)) return;
+    let when = null;
+    const ts = c.created_at || c.status_updated_at || '';
+    if(ts) when = new Date((''+ts).replace(' ','T'));
+    if(!when || isNaN(when.getTime()) || when.getTime() < cutoff()) return;
+    const body = (c.content||'').replace(/\s+/g,' ').trim();
+    if(!body) return;
+    const cls = classify(body);
+    seen.add(id);
+    out.push({ id, sev:cls.sev, src:'NUSWhispers', time:when.toISOString(),
+      reach:'Confession #'+c.confession_id+' · '+(c.views||0)+' views'+(c.fb_like_count?' · '+c.fb_like_count+' likes':''),
+      text: esc(body.length>240 ? body.slice(0,240)+'…' : body),
+      tag: cls.tag, url:'https://www.nuswhispers.com/confession/'+c.confession_id, auto:true });
+  };
+  try{
+    const j = await fetchJSON('https://www.nuswhispers.com/api/confessions/recent?count=60');
+    reached = true;
+    const kws = kwArr().map(k=>k.toLowerCase());
+    for(const c of ((j.data && j.data.confessions) || [])){
+      const low = (c.content||'').toLowerCase();
+      if(kws.some(k=>low.includes(k)) || /\bsoc\b|school of computing|comp\s?sci/.test(low)) addConf(c);
+    }
+  }catch(e){}
   for(const kw of kwArr().slice(0,4)){
     let j;
     try{ j = await fetchJSON('https://www.nuswhispers.com/api/confessions/search/'+encodeURIComponent(kw)+'?count=10'); reached = true; }
     catch(e){ continue; }
-    const list = (j.data && j.data.confessions) || [];
-    for(const c of list){
-      const id = 'w'+c.confession_id;
-      if(seen.has(id)) continue;
-      let when = null;
-      const ts = c.created_at || c.status_updated_at || '';
-      if(ts) when = new Date((''+ts).replace(' ','T'));
-      if(!when || isNaN(when.getTime()) || when.getTime() < cutoff()) continue;
-      const body = (c.content||'').replace(/\s+/g,' ').trim();
-      if(!body) continue;
-      const cls = classify(body);
-      seen.add(id);
-      out.push({ id, sev:cls.sev, src:'NUSWhispers', time:when.toISOString(),
-        reach:'Confession #'+c.confession_id+' · '+(c.views||0)+' views'+(c.fb_like_count?' · '+c.fb_like_count+' likes':''),
-        text: esc(body.length>240 ? body.slice(0,240)+'…' : body),
-        tag: cls.tag, url:'https://www.nuswhispers.com/confession/'+c.confession_id, auto:true });
-    }
+    for(const c of ((j.data && j.data.confessions) || [])) addConf(c);
   }
   if(!reached) throw new Error('unreachable');
   return out;
@@ -553,7 +562,7 @@ function renderAll(){
     });
     feed.appendChild(d);
   });
-  if(!shown) feed.innerHTML = '<div class="feed-empty">No mentions in this view yet — run a scan or adjust settings.</div>';
+  if(!shown) feed.innerHTML = '<div class="feed-empty">No mentions in this window — sources are quiet right now. Try widening retention in Settings, or check back after the next scan.</div>';
 
   const chWrap = $('channels'); chWrap.innerHTML='';
   const byCh = {};
