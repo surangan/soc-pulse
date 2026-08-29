@@ -1,0 +1,22 @@
+{
+ "updated": "2026-08-29T04:44:40.502Z",
+ "retain_days": 30,
+ "log": [
+  "NUSWhispers: 1 new (2 in window)",
+  "Reddit · r/nus: FAILED - no credentials (see SETUP.md)",
+  "Bluesky: FAILED - HTTP 403",
+  "Hacker News: 0 new (0 in window)"
+ ],
+ "mentions": [
+  {
+   "id": "w109706",
+   "sev": "attn",
+   "src": "NUSWhispers",
+   "time": "2026-08-19T18:27:37.000Z",
+   "reach": "Confession #109706 · 58 views",
+   "text": "Dear Dr. Ben, I'd like your perspective on the relationship between academic CS performance and real-world software engineering ability, and I'll frame it through my own experience. I earned mostly Bs and Cs in many of my CS courses at UC B…",
+   "tag": "Negative sentiment · review &amp; monitor",
+   "url": "https://www.nuswhispers.com/confession/109706"
+  }
+ ]
+}
