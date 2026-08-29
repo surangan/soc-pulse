@@ -402,6 +402,24 @@ function prox(u){ return [u,
   'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
   'https://api.allorigins.win/raw?url='+encodeURIComponent(u)]; }
 
+async function scanServerFeed(){
+  const seen = new Set(store.mentions.map(m=>m.id));
+  let j;
+  try{ j = await fetchJSON('data/mentions.json?cb='+Date.now(), 8000); }
+  catch(e){ if((''+e.message).indexOf('404')>=0) return []; throw e; }
+  const out = [];
+  for(const m of (j.mentions||[])){
+    if(!m || !m.id || seen.has(m.id)) continue;
+    const t = new Date(m.time).getTime();
+    if(isNaN(t) || t < cutoff()) continue;
+    seen.add(m.id);
+    out.push({ id:m.id, sev:m.sev||'neutral', src:m.src||'Server feed', time:m.time,
+      reach:(m.reach||'')+' \u00b7 via server scan', text:m.text||'', tag:m.tag||'',
+      url:m.url||'#', auto:true });
+  }
+  return out;
+}
+
 async function scanReddit(){
   const seen = new Set(store.mentions.map(m=>m.id));
   const out = [];
@@ -479,6 +497,7 @@ async function runScan(trigger){
   const log = [];
   const ch = store.settings.channels;
   const jobs = [];
+  jobs.push(['Server feed', scanServerFeed]);
   if(ch.whispers) jobs.push(['NUSWhispers', scanNUSWhispers]); else log.push({cls:'skip', text:'NUSWhispers: off in settings'});
   if(ch.reddit) jobs.push(['Reddit \u00b7 r/nus', scanReddit]); else log.push({cls:'skip', text:'Reddit: off in settings'});
   if(ch.bsky) jobs.push(['Bluesky', scanBluesky]); else log.push({cls:'skip', text:'Bluesky: off in settings'});
