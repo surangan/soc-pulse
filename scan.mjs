@@ -1,6 +1,7 @@
 // SoC Pulse server-side scanner
 // Runs in GitHub Actions (Node 20+). Scans public sources and writes data/mentions.json.
-// Reddit is scanned only when REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET are set (see SETUP.md).
+// Reddit needs REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET; Bluesky works best with
+// BSKY_HANDLE / BSKY_APP_PASSWORD. Both are optional - see SETUP.md.
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 
@@ -88,7 +89,26 @@ async function scanHackerNews() {
 
 async function scanBluesky() {
   const out = [];
-  const j = await fetchJSON('https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=' + encodeURIComponent('NUS computing') + '&limit=25');
+  const q = encodeURIComponent('NUS computing');
+  const handle = process.env.BSKY_HANDLE, pw = process.env.BSKY_APP_PASSWORD;
+  let j;
+  if (handle && pw) {
+    // Authenticated: Bluesky's public AppView rejects datacenter IPs, but a logged-in
+    // session through the user's PDS is allowed. App passwords are revocable and read-only here.
+    const sess = await fetchJSON('https://bsky.social/xrpc/com.atproto.server.createSession', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier: handle, password: pw })
+    });
+    j = await fetchJSON('https://bsky.social/xrpc/app.bsky.feed.searchPosts?q=' + q + '&limit=25', {
+      headers: { 'Authorization': 'Bearer ' + sess.accessJwt }
+    });
+  } else {
+    try {
+      j = await fetchJSON('https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=' + q + '&limit=25');
+    } catch (e) {
+      throw new Error('no credentials (see SETUP.md) - public API returned ' + e.message);
+    }
+  }
   for (const p of j.posts || []) {
     const rkey = (p.uri || '').split('/').pop();
     const when = new Date(p.record?.createdAt);

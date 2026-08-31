@@ -8,7 +8,7 @@ member — shared history, no browser limitations.
 
 ## What works with zero setup
 
-NUSWhispers, Bluesky and Hacker News are scanned server-side immediately.
+NUSWhispers and Hacker News are scanned server-side immediately.
 Nothing to configure. To trigger the first run manually:
 
 1. Go to the repo's **Actions** tab
@@ -47,6 +47,22 @@ generous free tier. You need a Reddit account.
 Secrets are encrypted by GitHub and are **not** visible in the public repo
 or to the dashboard — only the Action can read them. Never put these values
 in `index.html` or any committed file.
+
+## Enabling Bluesky (3 minutes, free)
+
+Bluesky's public search API rejects requests from server IPs, so the scanner
+signs in with an **app password** instead. App passwords are separate from
+your real password, read-only for our purposes, and can be revoked any time.
+
+1. Log in to Bluesky, then open **Settings → Privacy and security →
+   App passwords** and click **Add App Password**. Name it `soc-pulse` and
+   copy the generated password (it is shown once).
+2. In this GitHub repo: **Settings → Secrets and variables → Actions →
+   New repository secret**. Create:
+   - `BSKY_HANDLE` — your handle, e.g. `yourname.bsky.social`
+   - `BSKY_APP_PASSWORD` — the app password from step 1
+3. Run the workflow again. The run log should show `Bluesky: N new` instead
+   of `FAILED - no credentials`.
 
 ## Notes
 
