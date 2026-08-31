@@ -192,7 +192,7 @@ header{background:var(--blue);color:#fff;padding:0 28px}
     </div>
   </div>
 
-  <p class="proto-note">All mentions are real public posts · metrics computed from tracked mentions · NUSWhispers, Reddit, Bluesky &amp; Hacker News scanned live in this browser · X / LinkedIn / TikTok / press require the server-side pipeline · the retention window applies to every mention · history is stored in this browser only</p>
+  <p class="proto-note">All mentions are real public posts · metrics computed from tracked mentions · NUSWhispers &amp; Hacker News scanned live in this browser, plus the hourly server pipeline (Reddit &amp; Bluesky need credentials — see SETUP.md) · X / LinkedIn / TikTok / press coming to the pipeline · the retention window applies to every mention</p>
 </div>
 
 <!-- Report modal -->
@@ -402,11 +402,15 @@ function prox(u){ return [u,
   'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
   'https://api.allorigins.win/raw?url='+encodeURIComponent(u)]; }
 
+let serverInfo = null;
+function serverLine(prefix){ return (serverInfo && serverInfo.log.find(l => l.indexOf(prefix)===0)) || ''; }
+function serverSummary(prefix){ return serverLine(prefix).replace(/^[^:]*:\s*/,''); }
 async function scanServerFeed(){
   const seen = new Set(store.mentions.map(m=>m.id));
   let j;
   try{ j = await fetchJSON('data/mentions.json?cb='+Date.now(), 8000); }
-  catch(e){ if((''+e.message).indexOf('404')>=0) return []; throw e; }
+  catch(e){ serverInfo = null; if((''+e.message).indexOf('404')>=0) return []; throw e; }
+  serverInfo = { updated: j.updated||'', log: Array.isArray(j.log) ? j.log : [] };
   const out = [];
   for(const m of (j.mentions||[])){
     if(!m || !m.id || seen.has(m.id)) continue;
@@ -496,10 +500,23 @@ async function runScan(trigger){
   $('scanStatus').innerHTML = '<b>Scanning…</b> ('+esc(trigger||'manual')+')';
   const log = [];
   const ch = store.settings.channels;
+  // 1) Server feed first: it tells us what the pipeline already covers
+  try{
+    const items = await scanServerFeed();
+    store.mentions.push(...items);
+    log.push({cls:'ok', text:'Server feed: '+items.length+' new'+(serverInfo ? ' \u00b7 server scanned '+fmtRel(serverInfo.updated) : ' \u00b7 pipeline not active yet')});
+  }catch(e){ serverInfo = null; log.push({cls:'err', text:'Server feed: unreachable'}); }
+  // 2) Browser-side channels
   const jobs = [];
-  jobs.push(['Server feed', scanServerFeed]);
   if(ch.whispers) jobs.push(['NUSWhispers', scanNUSWhispers]); else log.push({cls:'skip', text:'NUSWhispers: off in settings'});
-  if(ch.reddit) jobs.push(['Reddit \u00b7 r/nus', scanReddit]); else log.push({cls:'skip', text:'Reddit: off in settings'});
+  if(!ch.reddit) log.push({cls:'skip', text:'Reddit: off in settings'});
+  else if(serverInfo){
+    // Reddit is never reachable from a browser; report what the server did instead
+    const sl = serverLine('Reddit');
+    if(/no credentials/i.test(sl)) log.push({cls:'skip', text:'Reddit \u00b7 r/nus: server-side \u00b7 awaiting credentials (SETUP.md)'});
+    else if(/FAILED/.test(sl)) log.push({cls:'err', text:'Reddit \u00b7 r/nus: server-side scan failed \u00b7 '+serverSummary('Reddit')});
+    else log.push({cls:'ok', text:'Reddit \u00b7 r/nus: via server feed'+(sl ? ' \u00b7 '+serverSummary('Reddit') : '')});
+  } else jobs.push(['Reddit \u00b7 r/nus', scanReddit]);
   if(ch.bsky) jobs.push(['Bluesky', scanBluesky]); else log.push({cls:'skip', text:'Bluesky: off in settings'});
   if(ch.hn) jobs.push(['Hacker News', scanHackerNews]); else log.push({cls:'skip', text:'Hacker News: off in settings'});
   for(const [name, fn] of jobs){
@@ -508,10 +525,18 @@ async function runScan(trigger){
       store.mentions.push(...items);
       log.push({cls:'ok', text:name+': '+items.length+' new'});
     }catch(e){
-      log.push({cls:'err', text:name+': unreachable'});
+      let cls = 'err', text = name+': unreachable';
+      if(name==='Bluesky'){
+        const sl = serverLine('Bluesky');
+        if(sl && !/FAILED/.test(sl)){ cls='ok'; text='Bluesky: via server feed \u00b7 '+serverSummary('Bluesky'); }
+        else if(/no credentials/i.test(sl)) text='Bluesky: blocked in this browser \u00b7 server-side awaiting app password (SETUP.md)';
+        else text='Bluesky: blocked in this browser (ad-blocker?)';
+      }
+      if(name.indexOf('Reddit')===0) text='Reddit \u00b7 r/nus: unreachable from browsers \u00b7 enable the server pipeline (SETUP.md)';
+      log.push({cls, text});
     }
   }
-  log.push({cls:'skip', text:'X, LinkedIn, TikTok, press: server-side pipeline required'});
+  log.push({cls:'skip', text:'X, LinkedIn, TikTok, press: not yet in the server pipeline'});
   store.mentions = store.mentions.filter(m => new Date(m.time).getTime() >= cutoff());
   store.lastScan = Date.now();
   store.lastLog = log;
