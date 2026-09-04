@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-04T09:39:20.110Z",
+ "updated": "2026-09-04T14:21:58.271Z",
  "retain_days": 30,
  "log": [
   "NUSWhispers: 0 new (2 in window)",
@@ -13,7 +13,7 @@
    "sev": "attn",
    "src": "NUSWhispers",
    "time": "2026-08-19T18:27:37.000Z",
-   "reach": "Confession #109706 · 58 views",
+   "reach": "Confession #109706 · 59 views",
    "text": "Dear Dr. Ben, I'd like your perspective on the relationship between academic CS performance and real-world software engineering ability, and I'll frame it through my own experience. I earned mostly Bs and Cs in many of my CS courses at UC B…",
    "tag": "Negative sentiment · review &amp; monitor",
    "url": "https://www.nuswhispers.com/confession/109706"
