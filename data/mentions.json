@@ -1,8 +1,8 @@
 {
- "updated": "2026-09-18T15:00:26.249Z",
+ "updated": "2026-09-18T18:28:51.931Z",
  "retain_days": 30,
  "log": [
-  "NUSWhispers: 0 new (3 in window)",
+  "NUSWhispers: 0 new (1 in window)",
   "Reddit · r/nus: FAILED - no credentials (see SETUP.md)",
   "Bluesky: FAILED - no credentials (see SETUP.md) - public API returned HTTP 403",
   "Hacker News: 0 new (0 in window)"
@@ -17,16 +17,6 @@
    "text": "Prof. Ben, I just want to ask you for your opinion on whether the leaders in our government should have backgrounds more in STEM or more in law and social sciences. What we have today is a quite balanced, but I am unsure whether it is a cor…",
    "tag": "Community chatter · monitor",
    "url": "https://www.nuswhispers.com/confession/109707"
-  },
-  {
-   "id": "w109706",
-   "sev": "attn",
-   "src": "NUSWhispers",
-   "time": "2026-08-19T18:27:37.000Z",
-   "reach": "Confession #109706 · 59 views",
-   "text": "Dear Dr. Ben, I'd like your perspective on the relationship between academic CS performance and real-world software engineering ability, and I'll frame it through my own experience. I earned mostly Bs and Cs in many of my CS courses at UC B…",
-   "tag": "Negative sentiment · review &amp; monitor",
-   "url": "https://www.nuswhispers.com/confession/109706"
   }
  ]
 }
